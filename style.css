@@ -1,0 +1,1238 @@
+/* ===== FilmHall design tokens =====================================
+   Content lives in the FilmHall CMS; design lives here and nowhere else.
+   Every colour below is a token so the whole branch site can be re-skinned
+   by editing this block only. Brand rule: Lotus is primary, white/red/black
+   support it, green and purple are accents used sparingly. */
+:root {
+    /* primary - lotus */
+    --fh-lotus: #C21E56;
+    --fh-lotus-deep: #8E1440;
+
+    /* supporting core */
+    --fh-white: #FFFFFF;
+    --fh-black: #0B0709;
+    --fh-red: #E50914;
+    --fh-red-deep: #A8070F;
+
+    /* accents - sparing */
+    --fh-green: #158E5E;
+    --fh-purple: #6E43BE;
+
+    /* neutrals / surfaces */
+    --fh-paper: #FFFFFF;
+    --fh-paper-alt: #F7F2F4;
+    --fh-line: #E6D8DE;
+    --fh-ink: #1B1216;
+    --fh-ink-muted: #6E5B63;
+    --fh-ink-faint: #9C8A92;
+
+    /* shape + rhythm */
+    --fh-radius: 14px;
+    --fh-radius-sm: 10px;
+    --fh-shadow: 0 6px 18px rgba(11, 7, 9, .08);
+    --fh-shadow-hover: 0 12px 26px rgba(11, 7, 9, .14);
+    --fh-maxw: 960px;
+    --fh-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+}
+
+/* ===== Global styling ===== */
+body {
+    font-family: var(--fh-font);
+    margin: 0;
+    padding: 0;
+    color: var(--fh-ink);
+    background: var(--fh-paper-alt);
+    text-align: center;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+header {
+    max-width: var(--fh-maxw);
+    margin: 0 auto;
+    padding: 30px 18px 4px;
+}
+
+.main-title {
+    color: var(--fh-lotus);
+    font-weight: 800;
+    font-size: clamp(26px, 5vw, 36px);
+    letter-spacing: -.5px;
+    margin: 0;
+}
+
+.tagline {
+    color: var(--fh-lotus);
+    font-weight: 600;
+    font-size: clamp(15px, 2.6vw, 18px);
+    line-height: 1.45;
+    max-width: 720px;
+    margin: 10px auto 0;
+    padding: 0 4px;
+}
+
+/* ===== Header Logo ===== */
+.logo {
+    width: 130px;          /* reduced size */
+    margin: 20px auto 10px;
+    display: block;
+}
+
+/* ===== Odisha Map Banner ===== */
+/* Banner (Odisha Map) */
+.banner {
+    max-width: var(--fh-maxw);
+    margin: 0 auto;
+    padding: 0 18px;
+}
+
+.banner img {
+    width: 60%;        /* Reduce size */
+    max-width: 350px;  /* Prevent too big */
+    border-radius: 20px;
+    display: block;
+    margin: 20px auto;
+    box-shadow: var(--fh-shadow);
+}
+
+/* ===== Title & Quote ===== */
+h1 {
+    font-size: clamp(22px, 4vw, 28px);
+    margin: 10px 0;
+    color: var(--fh-ink);
+    font-weight: 800;
+    letter-spacing: -.3px;
+}
+
+h2 {
+    font-size: clamp(17px, 3vw, 21px);
+    color: var(--fh-lotus-deep);
+    font-weight: 800;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+}
+
+h3 {
+    font-size: 14px;
+    color: var(--fh-ink);
+    font-weight: 700;
+    line-height: 1.35;
+    margin: 10px 4px 2px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: var(--fh-ink-muted);
+    margin-bottom: 25px;
+}
+
+section {
+    padding: 0 18px;
+}
+
+.hall-section {
+    max-width: var(--fh-maxw);
+    margin: 0 auto;
+    padding-top: 8px;
+}
+
+/* ===== Hall Image Grid ===== */
+.hall-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    padding: 0 10px;
+    margin-top: 14px;
+}
+
+/* ===== Hall Box ===== */
+.hall-card {
+    width: 150px;        /* small & neat */
+    background: var(--fh-white);
+    padding: 10px;
+    border-radius: var(--fh-radius);
+    border: 1px solid var(--fh-line);
+    box-shadow: var(--fh-shadow);
+    transition: transform .18s ease, box-shadow .18s ease,
+                border-color .18s ease;
+}
+
+.hall-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--fh-shadow-hover);
+    border-color: var(--fh-lotus);
+}
+
+.hall-card:focus-within {
+    border-color: var(--fh-lotus);
+    box-shadow: var(--fh-shadow-hover);
+}
+
+.hall-card a {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.hall-card img {
+    width: 100%;
+    height: 95px;
+    object-fit: cover;
+    border-radius: var(--fh-radius-sm);
+}
+
+/* ===== Contact Section ===== */
+.contact {
+    margin-top: 25px;
+    padding: 10px;
+    background: var(--fh-white);
+}
+
+.contact a {
+    margin: 0 10px;
+    text-decoration: none;
+    font-size: 16px;
+    color: var(--fh-lotus);
+    font-weight: bold;
+}
+
+.contact a:hover {
+    color: var(--fh-lotus-deep);
+}
+
+/* ===== Social links ===== */
+.social {
+    max-width: var(--fh-maxw);
+    margin: 28px auto 0;
+}
+
+.social .icons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.social .icons a {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--fh-white);
+    background: var(--fh-lotus);
+    transition: background .18s ease, transform .18s ease;
+}
+
+.social .icons a:hover {
+    background: var(--fh-lotus-deep);
+    transform: translateY(-1px);
+}
+
+.social .icons .fb { background: #1877F2; }
+.social .icons .yt { background: #FF0000; }
+.social .icons .ig {
+    background: linear-gradient(45deg, #F58529, #DD2A7B, #8134AF, #515BD4);
+}
+
+/* ===== Footer ===== */
+footer {
+    margin-top: 20px;
+    padding: 22px 18px 30px;
+    font-size: 12px;
+    color: var(--fh-ink-faint);
+    background: var(--fh-white);
+    border-top: 1px solid var(--fh-line);
+}
+
+/* ===== CMS-driven content =====
+   These rules only affect elements the CMS content loader inserts or fills.
+   Sections that have no published content stay hidden, so the page above is
+   unchanged. Add styling here as new content types gain a home on the site. */
+[hidden] {
+    display: none !important;
+}
+
+.cms-section {
+    margin-top: 25px;
+    padding: 0 10px;
+}
+
+.intro {
+    color: var(--fh-ink-muted);
+    font-size: 15px;
+    font-weight: normal;
+    max-width: 640px;
+    margin: 10px auto 0;
+    padding: 0 15px;
+}
+
+.cms-meta {
+    margin: 6px 0 0;
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--fh-ink-muted);
+}
+
+.cms-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.ticket-btn {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 6px 12px;
+    background: var(--fh-lotus);
+    color: var(--fh-white);
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.ticket-btn:hover {
+    background: var(--fh-lotus-deep);
+}
+
+/* ===== Accessibility + responsive ===== */
+a:focus-visible,
+button:focus-visible {
+    outline: 3px solid var(--fh-lotus);
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+@media (max-width: 600px) {
+    .banner img {
+        width: 82%;
+    }
+    h2 {
+        font-size: 16px;
+    }
+    .hall-card {
+        width: calc(50% - 16px);
+    }
+    .hall-card img {
+        height: 110px;
+    }
+}
+
+@media (max-width: 380px) {
+    .hall-card {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ===== Activities board (Community / Development) =====
+   A small navigation board under the theatre grid. */
+.board-section {
+    max-width: var(--fh-maxw);
+    margin: 26px auto 0;
+    padding: 0 18px;
+}
+
+.board-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.board-btn {
+    display: inline-block;
+    min-width: 150px;
+    padding: 12px 24px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--fh-white);
+    background: var(--fh-lotus);
+    box-shadow: var(--fh-shadow);
+    transition: background .18s ease, transform .18s ease;
+}
+
+.board-btn:hover {
+    background: var(--fh-lotus-deep);
+    transform: translateY(-1px);
+}
+
+.board-btn-alt {
+    background: var(--fh-lotus-deep);
+}
+
+.board-btn-alt:hover {
+    background: var(--fh-lotus-dark);
+}
+
+/* ===== Inner pages (theatre / community / development) ===== */
+.inner-page {
+    background: var(--fh-paper-alt);
+}
+
+.inner-header {
+    max-width: var(--fh-maxw);
+    margin: 0 auto;
+    padding: 22px 18px 6px;
+}
+
+.inner-header .logo {
+    margin: 0 auto 6px;
+}
+
+.page-kicker {
+    color: var(--fh-lotus);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 4px 0 0;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 6px;
+    color: var(--fh-lotus-deep);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    color: var(--fh-lotus);
+}
+
+.page-main {
+    max-width: var(--fh-maxw);
+    margin: 0 auto;
+    padding: 18px;
+}
+
+.page-title {
+    color: var(--fh-lotus-deep);
+    font-size: clamp(24px, 5vw, 32px);
+    font-weight: 800;
+    margin: 0;
+}
+
+.page-subtitle {
+    color: var(--fh-ink-muted);
+    font-size: 14px;
+    margin: 6px 0 0;
+}
+
+.page-message {
+    color: var(--fh-ink-muted);
+    font-size: 14px;
+    padding: 14px;
+}
+
+/* ===== Theatre page (page 3) ===== */
+.theatre-hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    padding: 18px;
+    background: var(--fh-white);
+    border: 1px solid var(--fh-line);
+    border-radius: var(--fh-radius);
+    box-shadow: var(--fh-shadow);
+}
+
+.theatre-photo {
+    width: 260px;
+    max-width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: var(--fh-radius-sm);
+}
+
+.theatre-info {
+    flex: 1 1 280px;
+    min-width: 240px;
+    text-align: left;
+}
+
+.theatre-name {
+    color: var(--fh-lotus-deep);
+    font-size: clamp(22px, 4vw, 30px);
+    font-weight: 800;
+    margin: 0 0 6px;
+}
+
+.theatre-meta {
+    color: var(--fh-ink-muted);
+    font-size: 14px;
+    margin: 4px 0;
+}
+
+.status-chip {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--fh-white);
+    background: var(--fh-ink-muted);
+}
+
+.status-active { background: var(--fh-green); }
+.status-paused { background: var(--fh-red); }
+.status-planned { background: var(--fh-purple); }
+
+.theatre-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.btn-primary {
+    display: inline-block;
+    padding: 13px 30px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 800;
+    text-decoration: none;
+    color: var(--fh-white);
+    background: var(--fh-lotus);
+    box-shadow: var(--fh-shadow);
+    transition: background .18s ease, transform .18s ease;
+}
+
+.btn-primary:hover {
+    background: var(--fh-lotus-deep);
+    transform: translateY(-1px);
+}
+
+.contact-link {
+    display: inline-block;
+    color: var(--fh-ink);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 10px 16px;
+    border: 1px solid var(--fh-line);
+    border-radius: 10px;
+    background: var(--fh-paper-alt);
+}
+
+.contact-link:hover {
+    border-color: var(--fh-lotus);
+    color: var(--fh-lotus-deep);
+}
+
+/* ---- See the Next Film ---- */
+.next-film {
+    margin-top: 28px;
+}
+
+.next-film-title {
+    text-align: center;
+}
+
+.next-film-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    margin-top: 14px;
+    padding: 18px;
+    background: var(--fh-white);
+    border: 1px solid var(--fh-line);
+    border-radius: var(--fh-radius);
+    box-shadow: var(--fh-shadow);
+}
+
+.next-film-poster {
+    width: 220px;
+    max-width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: var(--fh-radius-sm);
+    box-shadow: var(--fh-shadow);
+}
+
+.next-film-info {
+    text-align: left;
+    min-width: 220px;
+}
+
+.next-film-name {
+    font-size: 20px;
+    color: var(--fh-ink);
+    margin: 0 0 12px;
+}
+
+.yt-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--fh-white);
+    background: var(--fh-red);
+}
+
+.yt-btn:hover {
+    background: var(--fh-red-deep);
+}
+
+/* ===== Community page ===== */
+.category-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.cat-btn {
+    padding: 9px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--fh-line);
+    background: var(--fh-white);
+    color: var(--fh-ink);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+
+.cat-btn:hover {
+    border-color: var(--fh-lotus);
+    color: var(--fh-lotus-deep);
+}
+
+.cat-btn.active {
+    background: var(--fh-lotus);
+    border-color: var(--fh-lotus);
+    color: var(--fh-white);
+}
+
+.member-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+}
+
+.member-card {
+    width: 220px;
+    padding: 14px;
+    background: var(--fh-white);
+    border: 1px solid var(--fh-line);
+    border-radius: var(--fh-radius);
+    box-shadow: var(--fh-shadow);
+    text-align: center;
+}
+
+.member-photo {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: var(--fh-radius-sm);
+}
+
+.member-name {
+    color: var(--fh-lotus-deep);
+    font-size: 16px;
+    margin: 12px 4px 2px;
+}
+
+.member-meta {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--fh-ink-muted);
+}
+
+.member-bio {
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: var(--fh-ink);
+}
+
+.member-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--fh-white);
+    background: var(--fh-lotus);
+}
+
+.member-link:hover {
+    background: var(--fh-lotus-deep);
+}
+
+/* ===== Development page ===== */
+.dev-table-wrap {
+    margin-top: 20px;
+    overflow-x: auto;
+    background: var(--fh-white);
+    border: 1px solid var(--fh-line);
+    border-radius: var(--fh-radius);
+    box-shadow: var(--fh-shadow);
+}
+
+.dev-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 14px;
+}
+
+.dev-table th {
+    background: var(--fh-lotus-deep);
+    color: var(--fh-white);
+    font-weight: 700;
+    padding: 12px 14px;
+    text-align: left;
+}
+
+.dev-table td {
+    padding: 12px 14px;
+    border-top: 1px solid var(--fh-line);
+    color: var(--fh-ink);
+}
+
+.dev-table tbody tr:nth-child(even) {
+    background: var(--fh-paper-alt);
+}
+
+.dev-num {
+    width: 48px;
+    font-weight: 700;
+    color: var(--fh-lotus);
+}
+
+.dev-hall-link {
+    color: var(--fh-lotus-deep);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.dev-hall-link:hover {
+    color: var(--fh-lotus);
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .theatre-info,
+    .next-film-info {
+        text-align: center;
+    }
+    .theatre-actions {
+        justify-content: center;
+    }
+    .dev-table thead {
+        font-size: 12px;
+    }
+}
+
+/* ===== Theatre page v2: topbar, Make the Ticket, gallery, social ===== */
+
+/* ---- topbar: Odisha photo beside a small FilmHall logo box ---- */
+.theatre-topbar {
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    margin-bottom: 26px;
+}
+
+.topbar-photo-wrap {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: var(--fh-radius);
+    box-shadow: var(--fh-shadow);
+}
+
+.topbar-photo {
+    display: block;
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.topbar-logo-box {
+    width: 132px;
+    flex: 0 0 132px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+    background: var(--fh-white);
+    border: 1px solid var(--fh-line);
+    border-radius: var(--fh-radius);
+    box-shadow: var(--fh-shadow);
+}
+
+.topbar-logo {
+    max-width: 100%;
+    max-height: 120px;
+    object-fit: contain;
+}
+
+/* ---- Make the Ticket ---- */
+.make-ticket {
+    margin-top: 28px;
+}
+
+.make-ticket-title {
+    text-align: center;
+}
+
+.make-ticket-card {
+    margin-top: 14px;
+    padding: 20px;
+    background: var(--fh-white);
+    border: 1px solid var(--fh-line);
+    border-radius: var(--fh-radius);
+    box-shadow: var(--fh-shadow);
+}
+
+.make-ticket-film {
+    margin: 0 0 6px;
+    font-weight: 700;
+    color: var(--fh-lotus-deep);
+    text-align: center;
+}
+
+.field-label {
+    display: block;
+    margin: 14px 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: var(--fh-ink-muted);
+}
+
+.show-picker {
+    display: inline-block;
+}
+
+.show-select {
+    padding: 9px 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--fh-ink);
+    border: 1px solid var(--fh-line);
+    border-radius: var(--fh-radius-sm);
+    background: var(--fh-paper-alt);
+    cursor: pointer;
+}
+
+.price-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.price-chip {
+    cursor: pointer;
+}
+
+.price-chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.price-chip-label {
+    display: inline-block;
+    min-width: 72px;
+    padding: 10px 14px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--fh-ink);
+    border: 2px solid var(--fh-line);
+    border-radius: var(--fh-radius-sm);
+    background: var(--fh-paper-alt);
+    transition: border-color .15s ease, color .15s ease, background .15s ease;
+}
+
+.price-chip input:checked + .price-chip-label {
+    border-color: var(--fh-lotus);
+    color: var(--fh-white);
+    background: var(--fh-lotus);
+}
+
+/* ---- pay stage ---- */
+.pay-stage {
+    margin-top: 16px;
+}
+
+.pay-panel {
+    padding: 18px;
+    border: 1px dashed var(--fh-line);
+    border-radius: var(--fh-radius);
+    background: var(--fh-paper-alt);
+    text-align: center;
+}
+
+.pay-title {
+    margin: 0;
+    font-size: 22px;
+    color: var(--fh-lotus-deep);
+}
+
+.pay-to,
+.pay-step {
+    margin: 6px 0 0;
+    color: var(--fh-ink-muted);
+    font-size: 14px;
+}
+
+.pay-ref {
+    margin: 4px 0 12px;
+    font-weight: 700;
+    color: var(--fh-ink);
+}
+
+.pay-qr {
+    display: inline-block;
+    padding: 10px;
+    background: var(--fh-white);
+    border: 1px solid var(--fh-line);
+    border-radius: var(--fh-radius-sm);
+}
+
+.pay-qr-img {
+    display: block;
+    width: 200px;
+    max-width: 100%;
+    height: auto;
+}
+
+.mint-ok {
+    margin: 0 0 12px;
+    text-align: center;
+    font-weight: 800;
+    color: var(--fh-green);
+}
+
+/* ---- issued ticket ---- */
+.ticket-card {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 16px 18px 18px;
+    text-align: left;
+    color: var(--fh-ink);
+    background: #fffdf8;
+    border: 1px solid #e8dfc9;
+    border-radius: 14px;
+    box-shadow: var(--fh-shadow);
+    position: relative;
+}
+
+.ticket-card::before,
+.ticket-card::after {
+    content: "";
+    position: absolute;
+    top: 118px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--fh-paper-alt);
+    border: 1px solid #e8dfc9;
+}
+
+.ticket-card::before {
+    left: -14px;
+    border-right: none;
+}
+
+.ticket-card::after {
+    right: -14px;
+    border-left: none;
+}
+
+.ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 8px;
+    border-bottom: 2px dashed #d8c9a0;
+}
+
+.ticket-brand {
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: .04em;
+    color: var(--fh-lotus);
+}
+
+.ticket-tag {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    color: var(--fh-ink-muted);
+}
+
+.ticket-fields {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px 14px;
+    padding-top: 12px;
+    font-size: 14px;
+}
+
+.ticket-field-value {
+    font-weight: 700;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.ticket-qr {
+    display: flex;
+    justify-content: center;
+    margin-top: 14px;
+    padding: 10px;
+    background: var(--fh-white);
+    border: 1px solid var(--fh-line);
+    border-radius: var(--fh-radius-sm);
+}
+
+.ticket-qr-img {
+    width: 220px;
+    max-width: 100%;
+    height: auto;
+}
+
+.ticket-note {
+    margin: 12px 0 0;
+    text-align: center;
+    font-size: 13px;
+    color: var(--fh-ink-muted);
+}
+
+/* ---- gallery ---- */
+.gallery-section {
+    margin-top: 28px;
+}
+
+.gallery-title {
+    text-align: center;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.gallery-item {
+    display: block;
+    overflow: hidden;
+    border-radius: var(--fh-radius-sm);
+    box-shadow: var(--fh-shadow);
+}
+
+.gallery-img {
+    display: block;
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    transition: transform .2s ease;
+}
+
+.gallery-item:hover .gallery-img {
+    transform: scale(1.04);
+}
+
+/* ---- social feed ---- */
+.social-feed {
+    margin-top: 28px;
+}
+
+.social-feed-title {
+    margin-bottom: 6px;
+    text-align: center;
+}
+
+.social-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 12px 0 14px;
+}
+
+.social-tab {
+    padding: 9px 20px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--fh-ink-muted);
+    border: 1px solid var(--fh-line);
+    background: var(--fh-white);
+    cursor: pointer;
+    transition: color .15s ease, background .15s ease, border-color .15s ease;
+}
+
+.social-tab:hover {
+    color: var(--fh-lotus-deep);
+}
+
+.social-tab-active {
+    color: var(--fh-white);
+    background: var(--fh-lotus);
+    border-color: var(--fh-lotus);
+}
+
+.social-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.embed-item,
+.embed-item iframe {
+    max-width: 100%;
+}
+
+.embed-frame {
+    border: 1px solid var(--fh-line);
+    border-radius: var(--fh-radius-sm);
+}
+
+.embed-link {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--fh-white);
+    background: var(--fh-ink-muted);
+}
+
+.embed-link:hover {
+    background: var(--fh-lotus-deep);
+}
+
+@media (max-width: 760px) {
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .topbar-photo {
+        height: 140px;
+    }
+    .topbar-logo-box {
+        width: 108px;
+        flex-basis: 108px;
+    }
+    .theatre-topbar {
+        gap: 10px;
+    }
+}
+
+/* ===== Theatre page v3: brand bar + Call / WhatsApp booking ===== */
+
+/* ---- brand bar: big Odisha logo with a small FilmHall wordmark ---- */
+.brand-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 22px;
+    padding: 16px 20px;
+    background: var(--fh-white);
+    border: 1px solid var(--fh-line);
+    border-radius: var(--fh-radius);
+    box-shadow: var(--fh-shadow);
+}
+
+.brand-odisha {
+    height: 76px;
+    width: auto;
+    max-width: 55%;
+    object-fit: contain;
+}
+
+.brand-divider {
+    width: 1px;
+    align-self: stretch;
+    background: var(--fh-line);
+}
+
+.brand-filmhall {
+    height: 40px;
+    width: auto;
+    max-width: 34%;
+    object-fit: contain;
+}
+
+/* ---- Call + WhatsApp booking buttons ---- */
+.whatsapp-btn {
+    display: inline-block;
+    padding: 13px 30px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 800;
+    text-decoration: none;
+    color: var(--fh-white);
+    background: #25D366;
+    box-shadow: var(--fh-shadow);
+    transition: background .18s ease, transform .18s ease;
+}
+
+.whatsapp-btn:hover {
+    background: #1DA851;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 600px) {
+    .brand-bar {
+        gap: 12px;
+        padding: 14px;
+    }
+    .brand-odisha {
+        height: 56px;
+    }
+    .brand-filmhall {
+        height: 32px;
+    }
+}

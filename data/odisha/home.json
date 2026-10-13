@@ -1,0 +1,135 @@
+{
+  "region": {
+    "code": "odisha",
+    "label": "FilmHall Odisha",
+    "host": "odisha.filmhall.in",
+    "locale": "or_IN",
+    "status": "active",
+    "created_at": "2026-10-10T02:50:53.954240+00:00",
+    "created_by": null,
+    "updated_at": "2026-10-10T02:50:53.954240+00:00",
+    "updated_by": null,
+    "brand": null
+  },
+  "contents": {
+    "home.banner": {
+      "id": "cnt_01M4P2JCE9AMED3PP3GDK9",
+      "region": "odisha",
+      "content_key": "home.banner",
+      "title": "Home banner",
+      "summary": null,
+      "body_json": null,
+      "banner_media_id": "med_01M4P2JBJYB357HHGFGMNE",
+      "record_status": "published",
+      "published_at": "2026-10-11T18:11:00.552592+00:00",
+      "created_at": "2026-10-11T18:10:59.652819+00:00",
+      "updated_at": "2026-10-12T04:01:12.764396+00:00",
+      "owner_theatre_id": null,
+      "rev": 6,
+      "meta_json": null
+    },
+    "site.logo": {
+      "id": "cnt_01M4Q4B0TWNK7PWS5F39SG",
+      "region": "odisha",
+      "content_key": "site.logo",
+      "title": "Home logo",
+      "summary": null,
+      "body_json": null,
+      "banner_media_id": "med_01M4Q4AZV8GEFA3AJ8GB5A",
+      "record_status": "published",
+      "published_at": "2026-10-12T04:01:10.813848+00:00",
+      "created_at": "2026-10-12T04:01:09.977257+00:00",
+      "updated_at": "2026-10-12T04:01:10.813848+00:00",
+      "owner_theatre_id": null,
+      "rev": 2,
+      "meta_json": null
+    }
+  },
+  "activities": [],
+  "categories": [],
+  "community": [],
+  "documents": [],
+  "links": [],
+  "theatres": [
+    {
+      "theatre_id": "FH-OD-001",
+      "region": "odisha",
+      "name": "BHAIRABI CINEMA",
+      "owner_name": "PRABHASH BARIK",
+      "owner_user_id": null,
+      "district": "Cuttack",
+      "address": "THORIA SAHI, Cuttack",
+      "status": "active",
+      "photo_media_id": "med_01M4PTP2M2FSF853HSKJFF",
+      "current_film_title": "AWM - Agney Weds Milan",
+      "current_film_media_id": "med_01M4P0DQH7X9W0Z3D12ZZQ",
+      "ticket_generator_url": null,
+      "record_status": "published",
+      "published_at": "2026-10-10T18:27:41.848696+00:00",
+      "created_at": "2026-10-10T18:26:12.985887+00:00",
+      "updated_at": "2026-10-12T01:12:37.377125+00:00",
+      "rev": 15,
+      "meta_json": {
+        "phone": "7326097670",
+        "whatsapp": "7326097670",
+        "youtube": "https://youtu.be/dQw4w9WgXcQ"
+      },
+      "prices_json": [
+        100,
+        150,
+        200
+      ],
+      "payment_qr_media_id": "med_01M4KHZREEXWSR49D1SHED",
+      "social_json": {
+        "facebook": "https://www.facebook.com/filmhallodisha",
+        "instagram": "https://www.instagram.com/filmhallodisha",
+        "youtube": "https://youtu.be/dQw4w9WgXcQ"
+      },
+      "id": "FH-OD-001"
+    },
+    {
+      "theatre_id": "FH-THR-OD-002",
+      "region": "odisha",
+      "name": "MAA MAJHIGHARIANI",
+      "owner_name": "RAJU RAO",
+      "owner_user_id": "usr_01M4RS7W7247PEB6JRC86M",
+      "district": "RAYAGADA",
+      "address": "RAYAGADA",
+      "status": "active",
+      "photo_media_id": "med_01M4RS7SQGBJ25D7VT4TXE",
+      "current_film_title": null,
+      "current_film_media_id": null,
+      "ticket_generator_url": null,
+      "record_status": "published",
+      "published_at": "2026-10-12T19:25:40.605903+00:00",
+      "created_at": "2026-10-12T19:25:39.818397+00:00",
+      "updated_at": "2026-10-12T19:28:44.024744+00:00",
+      "rev": 4,
+      "meta_json": {
+        "phone": "+917326097670",
+        "whatsapp": "9556979654"
+      },
+      "prices_json": null,
+      "payment_qr_media_id": null,
+      "social_json": {},
+      "id": "FH-THR-OD-002"
+    }
+  ],
+  "media": {
+    "med_01M4KH47WCNH98PS778CT0": "media/med_01M4KH47WCNH98PS778CT0.png",
+    "med_01M4KH47YE56T894ZR1ASE": "media/med_01M4KH47YE56T894ZR1ASE.png",
+    "med_01M4KH480B9YCS7WZ6PCNR": "media/med_01M4KH480B9YCS7WZ6PCNR.png",
+    "med_01M4KH481QEF7MMK6KX55B": "media/med_01M4KH481QEF7MMK6KX55B.png",
+    "med_01M4KHYYS6RS93CVR25W6B": "media/med_01M4KHYYS6RS93CVR25W6B.png",
+    "med_01M4KHYYV68HKJ62181N8W": "media/med_01M4KHYYV68HKJ62181N8W.png",
+    "med_01M4KHYYW6X99F0EJ0PS1G": "media/med_01M4KHYYW6X99F0EJ0PS1G.png",
+    "med_01M4KHYYXAJ6ECCB5XZSNB": "media/med_01M4KHYYXAJ6ECCB5XZSNB.png",
+    "med_01M4P0AHDSNX7G4THQ31MV": "media/med_01M4P0AHDSNX7G4THQ31MV.jpg",
+    "med_01M4P0DQH7X9W0Z3D12ZZQ": "media/med_01M4P0DQH7X9W0Z3D12ZZQ.jpg",
+    "med_01M4P2JBJYB357HHGFGMNE": "media/med_01M4P2JBJYB357HHGFGMNE.jpg",
+    "med_01M4PTP2M2FSF853HSKJFF": "media/med_01M4PTP2M2FSF853HSKJFF.jpg",
+    "med_01M4Q48JCHEX01NHD0BZJD": "media/med_01M4Q48JCHEX01NHD0BZJD.jpeg",
+    "med_01M4Q4AZV8GEFA3AJ8GB5A": "media/med_01M4Q4AZV8GEFA3AJ8GB5A.jpeg",
+    "med_01M4RS7SQGBJ25D7VT4TXE": "media/med_01M4RS7SQGBJ25D7VT4TXE.jpg"
+  }
+}

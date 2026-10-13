@@ -1,0 +1,36 @@
+{
+  "items": [
+    {
+      "code": "odisha",
+      "label": "FilmHall Odisha",
+      "host": "odisha.filmhall.in",
+      "locale": "or_IN",
+      "status": "active",
+      "created_at": "2026-10-10T02:50:53.954240+00:00",
+      "created_by": null,
+      "updated_at": "2026-10-10T02:50:53.954240+00:00",
+      "updated_by": null,
+      "brand": null
+    }
+  ],
+  "brand": {
+    "logo_media_id": "med_01M4Q48JCHEX01NHD0BZJD"
+  },
+  "media": {
+    "med_01M4KH47WCNH98PS778CT0": "media/med_01M4KH47WCNH98PS778CT0.png",
+    "med_01M4KH47YE56T894ZR1ASE": "media/med_01M4KH47YE56T894ZR1ASE.png",
+    "med_01M4KH480B9YCS7WZ6PCNR": "media/med_01M4KH480B9YCS7WZ6PCNR.png",
+    "med_01M4KH481QEF7MMK6KX55B": "media/med_01M4KH481QEF7MMK6KX55B.png",
+    "med_01M4KHYYS6RS93CVR25W6B": "media/med_01M4KHYYS6RS93CVR25W6B.png",
+    "med_01M4KHYYV68HKJ62181N8W": "media/med_01M4KHYYV68HKJ62181N8W.png",
+    "med_01M4KHYYW6X99F0EJ0PS1G": "media/med_01M4KHYYW6X99F0EJ0PS1G.png",
+    "med_01M4KHYYXAJ6ECCB5XZSNB": "media/med_01M4KHYYXAJ6ECCB5XZSNB.png",
+    "med_01M4P0AHDSNX7G4THQ31MV": "media/med_01M4P0AHDSNX7G4THQ31MV.jpg",
+    "med_01M4P0DQH7X9W0Z3D12ZZQ": "media/med_01M4P0DQH7X9W0Z3D12ZZQ.jpg",
+    "med_01M4P2JBJYB357HHGFGMNE": "media/med_01M4P2JBJYB357HHGFGMNE.jpg",
+    "med_01M4PTP2M2FSF853HSKJFF": "media/med_01M4PTP2M2FSF853HSKJFF.jpg",
+    "med_01M4Q48JCHEX01NHD0BZJD": "media/med_01M4Q48JCHEX01NHD0BZJD.jpeg",
+    "med_01M4Q4AZV8GEFA3AJ8GB5A": "media/med_01M4Q4AZV8GEFA3AJ8GB5A.jpeg",
+    "med_01M4RS7SQGBJ25D7VT4TXE": "media/med_01M4RS7SQGBJ25D7VT4TXE.jpg"
+  }
+}
