@@ -7,9 +7,11 @@
     "status": "active",
     "created_at": "2026-10-10T02:50:53.954240+00:00",
     "created_by": null,
-    "updated_at": "2026-10-10T02:50:53.954240+00:00",
-    "updated_by": null,
-    "brand": null
+    "updated_at": "2026-10-14T01:00:12.717483+00:00",
+    "updated_by": "hq@filmhall.in",
+    "brand": {
+      "photo_media_id": "med_01M4VYS1TANEPHY7QYFQNF"
+    }
   },
   "contents": {
     "home.banner": {
@@ -23,9 +25,9 @@
       "record_status": "published",
       "published_at": "2026-10-11T18:11:00.552592+00:00",
       "created_at": "2026-10-11T18:10:59.652819+00:00",
-      "updated_at": "2026-10-12T04:01:12.764396+00:00",
+      "updated_at": "2026-10-14T01:05:02.326121+00:00",
       "owner_theatre_id": null,
-      "rev": 6,
+      "rev": 8,
       "meta_json": null
     },
     "site.logo": {
@@ -39,9 +41,9 @@
       "record_status": "published",
       "published_at": "2026-10-12T04:01:10.813848+00:00",
       "created_at": "2026-10-12T04:01:09.977257+00:00",
-      "updated_at": "2026-10-12T04:01:10.813848+00:00",
+      "updated_at": "2026-10-14T01:05:00.526707+00:00",
       "owner_theatre_id": null,
-      "rev": 2,
+      "rev": 4,
       "meta_json": null
     }
   },
@@ -130,6 +132,7 @@
     "med_01M4PTP2M2FSF853HSKJFF": "media/med_01M4PTP2M2FSF853HSKJFF.jpg",
     "med_01M4Q48JCHEX01NHD0BZJD": "media/med_01M4Q48JCHEX01NHD0BZJD.jpeg",
     "med_01M4Q4AZV8GEFA3AJ8GB5A": "media/med_01M4Q4AZV8GEFA3AJ8GB5A.jpeg",
-    "med_01M4RS7SQGBJ25D7VT4TXE": "media/med_01M4RS7SQGBJ25D7VT4TXE.jpg"
+    "med_01M4RS7SQGBJ25D7VT4TXE": "media/med_01M4RS7SQGBJ25D7VT4TXE.jpg",
+    "med_01M4VYS1TANEPHY7QYFQNF": "media/med_01M4VYS1TANEPHY7QYFQNF.jpeg"
   }
 }

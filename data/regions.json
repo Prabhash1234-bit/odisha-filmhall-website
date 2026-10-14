@@ -8,9 +8,11 @@
       "status": "active",
       "created_at": "2026-10-10T02:50:53.954240+00:00",
       "created_by": null,
-      "updated_at": "2026-10-10T02:50:53.954240+00:00",
-      "updated_by": null,
-      "brand": null
+      "updated_at": "2026-10-14T01:00:12.717483+00:00",
+      "updated_by": "hq@filmhall.in",
+      "brand": {
+        "photo_media_id": "med_01M4VYS1TANEPHY7QYFQNF"
+      }
     }
   ],
   "brand": {
@@ -31,6 +33,7 @@
     "med_01M4PTP2M2FSF853HSKJFF": "media/med_01M4PTP2M2FSF853HSKJFF.jpg",
     "med_01M4Q48JCHEX01NHD0BZJD": "media/med_01M4Q48JCHEX01NHD0BZJD.jpeg",
     "med_01M4Q4AZV8GEFA3AJ8GB5A": "media/med_01M4Q4AZV8GEFA3AJ8GB5A.jpeg",
-    "med_01M4RS7SQGBJ25D7VT4TXE": "media/med_01M4RS7SQGBJ25D7VT4TXE.jpg"
+    "med_01M4RS7SQGBJ25D7VT4TXE": "media/med_01M4RS7SQGBJ25D7VT4TXE.jpg",
+    "med_01M4VYS1TANEPHY7QYFQNF": "media/med_01M4VYS1TANEPHY7QYFQNF.jpeg"
   }
 }
