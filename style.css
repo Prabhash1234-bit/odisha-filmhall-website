@@ -98,6 +98,39 @@ header {
     padding: 0 18px;
 }
 
+.quote-section {
+    max-width: var(--fh-maxw);
+    margin: 10px auto 24px;
+    padding: 0 24px;
+    text-align: center;
+}
+
+.site-quote {
+    margin: 0 auto;
+    max-width: 760px;
+    font-size: clamp(16px, 2.4vw, 20px);
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--fh-ink, #1c1c1c);
+    border: 0;
+    padding: 0;
+}
+
+.site-quote::before {
+    content: "\201C";
+}
+
+.site-quote::after {
+    content: "\201D";
+}
+
+.site-quote-author {
+    margin: 8px 0 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fh-muted, #6b7280);
+}
+
 .banner img {
     width: 60%;        /* Reduce size */
     max-width: 350px;  /* Prevent too big */

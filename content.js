@@ -183,6 +183,22 @@
     existing.textContent = text;
   }
 
+  function applyQuote(content) {
+    var section = qs("#site-quote-section");
+    if (!section) return;
+    var row = content["home.quote"];
+    if (!row) return;
+    var text = asText(row.summary) || asText(row.body_json) || asText(row.title);
+    if (!text) return;
+    var quoteNode = qs("#site-quote");
+    if (quoteNode) quoteNode.textContent = text;
+    var author = asText(row.title) ||
+                 asText(row.meta_json && row.meta_json.author) || null;
+    var authorNode = qs("#site-quote-author");
+    if (authorNode) authorNode.textContent = author ? "\u2014 " + author : "";
+    section.removeAttribute("hidden");
+  }
+
   /* ---------- theatre / development cards ---------- */
 
   function mediaIdOf(obj) {
@@ -396,6 +412,7 @@
     applyLinks(contents);
     applyLogo(contents);
     applyIntro(contents);
+    applyQuote(contents);
 
     renderTheatres(payload.theatres || []);
 
