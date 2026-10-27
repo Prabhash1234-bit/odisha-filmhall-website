@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Community Login - FilmHall Odisha</title>
-  <link rel="stylesheet" href="style.css?v=20261014a">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Community Login - FilmHall Odisha</title>
+<link rel="stylesheet" href="style.css?v=20261014a">
 </head>
 <body class="inner-page">
   <header class="inner-header">
@@ -19,8 +19,8 @@
       <h1 style="text-align:center;color:#C21E56;margin-bottom:30px;">Community Login</h1>
       <form id="login-form">
         <div style="margin-bottom:20px;">
-          <label style="display:block;margin-bottom:8px;font-weight:600;">Email or Mobile</label>
-          <input type="text" id="login-identifier" required style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+          <label style="display:block;margin-bottom:8px;font-weight:600;">Mobile Number</label>
+          <input type="text" id="login-mobile" required style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
         </div>
         <div style="margin-bottom:20px;">
           <label style="display:block;margin-bottom:8px;font-weight:600;">Password</label>
@@ -38,17 +38,27 @@
   </footer>
 
   <script>
-    document.getElementById('login-form').addEventListener('submit', function(e) {
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
       e.preventDefault();
-      var id = document.getElementById('login-identifier').value;
-      var pwd = document.getElementById('login-password').value;
+      var mobile = document.getElementById('login-mobile').value.trim();
+      var pwd = document.getElementById('login-password').value.trim();
       var err = document.getElementById('login-error');
-      if (id && pwd) {
-        sessionStorage.setItem('community_auth', 'true');
-        sessionStorage.setItem('community_user', id);
-        window.location.href = 'community.html';
-      } else {
-        err.textContent = 'Please enter credentials';
+      err.style.display = 'none';
+      try {
+        const res = await fetch('community-config.json?_=' + Date.now());
+        const cfg = await res.json();
+        const users = cfg.users || [];
+        const found = users.find(u => u.mobile == mobile && u.password == pwd);
+        if (found) {
+          sessionStorage.setItem('community_auth', 'true');
+          sessionStorage.setItem('community_user', mobile);
+          window.location.href = 'community-dashboard.html';
+        } else {
+          err.textContent = 'Invalid mobile number or password';
+          err.style.display = 'block';
+        }
+      } catch(ex) {
+        err.textContent = 'Unable to login. Please try again.';
         err.style.display = 'block';
       }
     });

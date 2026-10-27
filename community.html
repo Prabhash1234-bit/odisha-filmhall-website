@@ -2,49 +2,15 @@
 <html lang="en">
 <head>
 <script>
-  if (sessionStorage.getItem('community_auth') !== 'true') {
+  if (sessionStorage.getItem('community_auth') === 'true') {
+    window.location.replace('community-dashboard.html');
+  } else {
     window.location.replace('community-login.html');
   }
 </script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FilmHall Odisha — Community</title>
-<link rel="stylesheet" href="style.css?v=20261014a">
-<script src="config.js?v=20261014a"></script>
-<script src="site.js?v=20261014a" defer></script>
-<script src="community.js?v=20261014a" defer></script>
+<title>Redirecting...</title>
 </head>
-
-<body class="inner-page">
-
-<!-- Header -->
-<header class="inner-header">
-  <a href="index.html">
-    <img src="logo.png" alt="FilmHall Odisha Logo" class="logo">
-  </a>
-  <a class="back-link" href="index.html">&#8592; Back to FilmHall</a>
-</header>
-
-<main class="page-main">
-  <h1 class="page-title">Community</h1>
-  <p class="page-subtitle">Production houses, producers, filmmakers and film persons</p>
-
-  <!-- Category tabs (filled by community.js; static labels are the fallback) -->
-  <nav class="category-nav" id="category-nav">
-    <button type="button" class="cat-btn" data-category="Production House">Production House</button>
-    <button type="button" class="cat-btn" data-category="Producer">Producer</button>
-    <button type="button" class="cat-btn" data-category="Filmmakers">Filmmakers</button>
-    <button type="button" class="cat-btn" data-category="Film Persons">Film Persons</button>
-  </nav>
-
-  <div class="member-list" id="community-list">
-    <p class="page-message">Loading community…</p>
-  </div>
-</main>
-
-<footer>
-  <p>© 2026 FilmHall Odisha | All Rights Reserved</p>
-</footer>
-
+<body>
 </body>
 </html>
