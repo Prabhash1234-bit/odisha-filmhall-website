@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+<script>
+  if (sessionStorage.getItem('community_auth') !== 'true') {
+    window.location.href = 'community-login.html';
+  }
+</script>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">

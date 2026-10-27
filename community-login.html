@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Login - FilmHall Odisha</title>
+  <link rel="stylesheet" href="style.css?v=20261014a">
+</head>
+<body class="inner-page">
+  <header class="inner-header">
+    <a href="index.html">
+      <img src="logo.png" alt="FilmHall Odisha Logo" class="logo">
+    </a>
+    <a class="back-link" href="index.html">&#8592; Back to Home</a>
+  </header>
+
+  <main class="page-main">
+    <section style="max-width:400px;margin:60px auto;background:white;padding:40px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);">
+      <h1 style="text-align:center;color:#C21E56;margin-bottom:30px;">Community Login</h1>
+      <form id="login-form">
+        <div style="margin-bottom:20px;">
+          <label style="display:block;margin-bottom:8px;font-weight:600;">Email or Mobile</label>
+          <input type="text" id="login-identifier" required style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:20px;">
+          <label style="display:block;margin-bottom:8px;font-weight:600;">Password</label>
+          <input type="password" id="login-password" required style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;">
+        </div>
+        <button type="submit" style="width:100%;padding:12px;background:linear-gradient(135deg,#C21E56,#8E1440);color:white;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;">Login</button>
+      </form>
+      <p id="login-error" style="color:red;text-align:center;margin-top:15px;display:none;"></p>
+      <p style="text-align:center;margin-top:20px;color:#666;font-size:14px;">Authorized persons only</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 FilmHall Odisha | All Rights Reserved</p>
+  </footer>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var id = document.getElementById('login-identifier').value;
+      var pwd = document.getElementById('login-password').value;
+      var err = document.getElementById('login-error');
+      if (id && pwd) {
+        sessionStorage.setItem('community_auth', 'true');
+        sessionStorage.setItem('community_user', id);
+        window.location.href = 'community.html';
+      } else {
+        err.textContent = 'Please enter credentials';
+        err.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
