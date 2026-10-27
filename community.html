@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
 <script>
   if (sessionStorage.getItem('community_auth') !== 'true') {
-    window.location.href = 'community-login.html';
+    window.location.replace('community-login.html');
   }
 </script>
-<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FilmHall Odisha — Community</title>
