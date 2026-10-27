@@ -1,7 +1,12 @@
 {
-  "poster": "",
+  "poster": "community-poster.jpeg",
   "facebookUrl": "",
   "instagramUrl": "",
   "videos": [],
-  "users": []
+  "users": [
+    {
+      "mobile": "7326097670",
+      "password": "Barik@270027"
+    }
+  ]
 }
