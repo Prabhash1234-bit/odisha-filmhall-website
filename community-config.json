@@ -33,14 +33,64 @@
       "published": true
     }
   ],
-  "gallery": [],
+  "gallery": [
+    {
+      "image": "gallery-1.jpeg",
+      "title": "",
+      "description": "",
+      "published": true
+    },
+    {
+      "image": "gallery-2.jpeg",
+      "title": "",
+      "description": "",
+      "published": true
+    },
+    {
+      "image": "gallery-3.jpeg",
+      "title": "",
+      "description": "",
+      "published": true
+    },
+    {
+      "image": "gallery-4.jpeg",
+      "title": "",
+      "description": "",
+      "published": true
+    }
+  ],
   "social": {
     "facebook": "https://www.facebook.com/share/1J6DyEQWCv/",
     "instagram": "https://www.instagram.com/filmhallodisha?utm_source=qr&psln=eHE0MDZ3NmZyZWZx",
     "youtube": "https://youtube.com/@filmhallodisha?si=Bx9T1jTySUJEYO0E",
     "youtubeGroup": ""
   },
-  "learningVideos": [],
+  "learningVideos": [
+    {
+      "url": "https://youtu.be/UrO1UPKkPwk?si=INn96Y4IftfoZJ0I",
+      "id": "UrO1UPKkPwk",
+      "title": "",
+      "description": "",
+      "thumb": "",
+      "published": true
+    },
+    {
+      "url": "https://youtu.be/SboAn25Hu90?si=7bBphWYI6Qsw6HWb",
+      "id": "SboAn25Hu90",
+      "title": "OFFICIAL VIDEO",
+      "description": "",
+      "thumb": "",
+      "published": true
+    },
+    {
+      "url": "https://youtu.be/s_aZ_tSa9LE?si=ecCTPpRg4TMze9yp",
+      "id": "s_aZ_tSa9LE",
+      "title": "",
+      "description": "",
+      "thumb": "",
+      "published": true
+    }
+  ],
   "footerText": "© 2026 FilmHall — An Unique Distribution System | All Rights Reserved",
   "users": [
     {
