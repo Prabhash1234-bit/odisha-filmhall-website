@@ -1,11 +1,11 @@
 {
-  "logo": "logo.png",
+  "logo": "logo.jpeg",
   "banner": {
     "image": "community-banner.jpg",
-    "heading": "",
-    "textEn": "",
-    "textOdia": "",
-    "slogan": ""
+    "heading": "FILMHALL ODISHA",
+    "textEn": "\" LETS GET TOGETHER . LETS LEARN.\"",
+    "textOdia": "“ ଆସ ଆମେ ମିଶିବା । ଆସ ଆମେ ଶିଖିବା ।। ”",
+    "slogan": "\" ।। ଆମେ ଓଡ଼ିଆ ଭାରି କୁଢ଼ିଆ ।। \""
   },
   "bannerGallery": [],
   "gallery": [],
