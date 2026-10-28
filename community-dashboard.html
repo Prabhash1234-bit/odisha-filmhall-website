@@ -11,120 +11,142 @@
 <title>FilmHall Odisha — Community</title>
 <link rel="stylesheet" href="style.css?v=20261014a">
 <style>
-  .poster-wrap { text-align:center; margin: 20px 0; }
-  .poster { max-width: 90%; width: 600px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-  .social-row { display:flex; gap:40px; justify-content:center; margin:30px 0; flex-wrap:wrap; }
-  .social-big { display:flex; flex-direction:column; align-items:center; text-decoration:none; color:#333; }
-  .social-big img { width:120px; height:120px; }
-  .social-big span { margin-top:10px; font-weight:600; }
-  .videos-section { max-width:1000px; margin:40px auto; padding:0 20px; }
-  .videos-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px; }
-  .video-card { background:white; border-radius:12px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.08); text-decoration:none; color:inherit; }
-  .video-thumb { width:100%; height:180px; object-fit:cover; background:#eee; }
-  .video-title { padding:12px; font-weight:600; }
-  .more-wrap { text-align:center; margin:30px 0; }
-  .more-btn { padding:12px 30px; background:#C21E56; color:white; border:none; border-radius:8px; font-weight:600; cursor:pointer; }
+  * { box-sizing: border-box; }
+  body.inner-page { background: #f7f8fa; }
+  .container { max-width: 1140px; margin: 0 auto; padding: 0 16px; }
+  .logo-wrap { text-align: center; padding: 18px 0 16px; }
+  .logo-wrap img { max-height: 90px; }
+  .banner-card { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 14px rgba(0,0,0,0.08); margin-bottom: 36px; }
+  .banner-img { width: 100%; height: auto; display: block; max-height: 420px; object-fit: cover; }
+  .banner-text-wrap { padding: 28px 36px; text-align: center; }
+  .banner-h1 { color: #C21E56; font-size: clamp(24px,4vw,38px); margin: 0 0 14px; font-weight: 800; }
+  .banner-p { color: #222; font-size: clamp(16px,2vw,19px); line-height: 1.7; margin: 10px 0; }
+  .banner-slog { color: #C21E56; font-weight: 800; font-size: clamp(18px,2.6vw,24px); margin-top: 18px; }
+  .section { margin: 48px 0; }
+  .sec-head { display:flex; align-items:center; justify-content:space-between; margin-bottom: 22px; }
+  .sec-title { color: #C21E56; font-size: clamp(22px,3.4vw,30px); margin:0; font-weight: 800; }
+  .viewall { color: #C21E56; text-decoration:none; font-weight: 700; }
+  .viewall:hover { text-decoration: underline; }
+  .h-scroll { display:flex; gap:16px; overflow-x:auto; padding: 4px 2px 12px; }
+  .gcard { min-width: 280px; max-width: 320px; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08); flex-shrink:0; }
+  .gimg { width:100%; height:210px; object-fit:cover; }
+  .ginfo { padding:12px 14px; }
+  .gtitle { font-weight:700; }
+  .gdesc { font-size:13px; color:#666; margin-top:2px; }
+  .social-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px; }
+  .scard { display:flex; align-items:center; gap:14px; background:#fff; padding:16px 20px; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.08); text-decoration:none; color:#222; }
+  .scard:hover { box-shadow:0 4px 18px rgba(0,0,0,0.12); }
+  .sicon { width:56px; height:56px; }
+  .sname { font-size:20px; font-weight:800; }
+  .sb-fb { border-left:4px solid #1877F2; }
+  .sb-ig { border-left:4px solid #E4405F; }
+  .sb-yt { border-left:4px solid #FF0000; }
+  .sb-ytg { border-left:4px solid #FF0000; }
+  .vgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:18px; }
+  .vcard { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08); text-decoration:none; color:inherit; }
+  .vimg { width:100%; height:190px; object-fit:cover; }
+  .vinfo { padding:12px 14px; }
+  .vtitle { font-weight:700; }
+  .vdesc { font-size:13px; color:#666; margin-top:2px; }
+  .vwatch { display:inline-block; margin-top:6px; color:#C21E56; font-weight:700; }
+  .empty { text-align:center; color:#666; background:#fff; padding:28px; border-radius:12px; }
+  footer { margin-top:60px; padding:26px 16px; text-align:center; background:#fff; border-top:1px solid #e5e7eb; color:#666; }
 </style>
 </head>
 <body class="inner-page">
 <header class="inner-header">
-  <a href="index.html">
-    <img src="logo.png" alt="FilmHall Odisha Logo" class="logo">
-  </a>
+  <a href="index.html"><img src="logo.png" class="logo" alt="FilmHall Odisha"></a>
   <a class="back-link" href="index.html">&#8592; Back to Home</a>
 </header>
 
-<main class="page-main">
-  <div style="text-align:center;">
-    <img src="logo.png" alt="FilmHall Odisha" style="max-height:80px;">
+<div class="container">
+  <div class="logo-wrap">
+    <img id="site-logo" src="logo.png" alt="FilmHall Logo">
   </div>
 
-  <div class="poster-wrap" id="poster-wrap" style="display:none;">
-    <img id="poster-img" class="poster" src="" alt="Community Poster">
-  </div>
-
-  <div class="social-row">
-    <a id="fb-link" class="social-big" href="#" target="_blank" style="display:none;">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
-      <span>Facebook Group</span>
-    </a>
-    <a id="ig-link" class="social-big" href="#" target="_blank" style="display:none;">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram">
-      <span>Instagram Group</span>
-    </a>
-  </div>
-
-  <section class="videos-section">
-    <h2 style="text-align:center;color:#C21E56;margin-bottom:30px;">Videos</h2>
-    <div class="videos-grid" id="videos-grid"></div>
-    <div class="more-wrap" id="more-wrap" style="display:none;">
-      <button class="more-btn" id="more-btn">More</button>
+  <section class="banner-card">
+    <img id="banner-img" class="banner-img" src="" alt="" style="display:none;">
+    <div class="banner-text-wrap">
+      <h1 id="b-h" class="banner-h1"></h1>
+      <p id="b-en" class="banner-p"></p>
+      <p id="b-od" class="banner-p"></p>
+      <div id="b-sl" class="banner-slog"></div>
     </div>
   </section>
-</main>
 
-<footer>
-  <p>© 2026 FilmHall Odisha | All Rights Reserved</p>
-</footer>
+  <section class="section">
+    <div class="sec-head">
+      <h2 class="sec-title">Gallery</h2>
+      <a class="viewall" href="gallery.html">View All ›</a>
+    </div>
+    <div class="h-scroll" id="banner-gallery"></div>
+    <div class="empty" id="bg-empty" style="display:none;">No photos added yet.</div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <h2 class="sec-title">Our Social Community</h2>
+    </div>
+    <div class="social-grid">
+      <a id="s-fb" href="#" target="_blank" class="scard sb-fb" style="display:none;"><img class="sicon" src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"><span class="sname">Facebook</span></a>
+      <a id="s-ig" href="#" target="_blank" class="scard sb-ig" style="display:none;"><img class="sicon" src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg"><span class="sname">Instagram</span></a>
+      <a id="s-yt" href="#" target="_blank" class="scard sb-yt" style="display:none;"><img class="sicon" src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg"><span class="sname">YouTube</span></a>
+      <a id="s-ytg" href="#" target="_blank" class="scard sb-ytg" style="display:none;"><img class="sicon" src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg"><span class="sname">YouTube Group</span></a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <h2 class="sec-title">Latest Gallery</h2>
+      <a class="viewall" href="gallery.html">View All ›</a>
+    </div>
+    <div class="h-scroll" id="latest-gallery"></div>
+    <div class="empty" id="lg-empty" style="display:none;">No photos added yet.</div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">
+      <h2 class="sec-title">Learning Videos</h2>
+      <a class="viewall" href="learning-videos.html">View All ›</a>
+    </div>
+    <div class="vgrid" id="vgrid"></div>
+    <div class="empty" id="vempty" style="display:none;">No videos added yet.</div>
+  </section>
+</div>
+
+<footer><p id="foot">© 2026 FilmHall — An Unique Distribution System | All Rights Reserved</p></footer>
 
 <script>
-let allVideos = [];
-let shown = 6;
-
-async function loadConfig(){
-  try {
-    const res = await fetch('community-config.json?_=' + Date.now());
-    const cfg = await res.json();
-    
-    if (cfg.poster) {
-      const img = document.getElementById('poster-img');
-      img.src = cfg.poster;
-      document.getElementById('poster-wrap').style.display = 'block';
+function getId(url){if(!url)return'';if(/^[a-zA-Z0-9_-]{11}$/.test(url))return url;try{const u=new URL(url);if(u.hostname.includes('youtu.be'))return u.pathname.slice(1);if(u.searchParams.get('v'))return u.searchParams.get('v');if(u.pathname.includes('/shorts/'))return u.pathname.split('/shorts/')[1].split('/')[0];if(u.pathname.includes('/embed/'))return u.pathname.split('/embed/')[1].split('/')[0];}catch(e){}return url;}
+async function load(){
+  try{
+    const r=await fetch('community-config.json?_='+Date.now()); const cfg=await r.json();
+    if(cfg.logo) document.getElementById('site-logo').src=cfg.logo;
+    if(cfg.banner){
+      if(cfg.banner.image){const bi=document.getElementById('banner-img');bi.src=cfg.banner.image;bi.style.display='block';}
+      if(cfg.banner.heading) document.getElementById('b-h').textContent=cfg.banner.heading;
+      if(cfg.banner.textEn) document.getElementById('b-en').textContent=cfg.banner.textEn;
+      if(cfg.banner.textOdia) document.getElementById('b-od').textContent=cfg.banner.textOdia;
+      if(cfg.banner.slogan) document.getElementById('b-sl').textContent=cfg.banner.slogan;
     }
-    if (cfg.facebookUrl) {
-      const fb = document.getElementById('fb-link');
-      fb.href = cfg.facebookUrl;
-      fb.style.display = 'flex';
-    }
-    if (cfg.instagramUrl) {
-      const ig = document.getElementById('ig-link');
-      ig.href = cfg.instagramUrl;
-      ig.style.display = 'flex';
-    }
-    if (Array.isArray(cfg.videos)) {
-      allVideos = cfg.videos;
-      renderVideos();
-    }
-  } catch(e) {}
+    const bg=(cfg.bannerGallery||[]).filter(x=>x.published!==false);
+    const bgd=document.getElementById('banner-gallery'); const bge=document.getElementById('bg-empty');
+    if(bg.length===0)bge.style.display='block'; else{bge.style.display='none'; for(const x of bg){const c=document.createElement('div');c.className='gcard';c.innerHTML=`<img class="gimg" src="${x.image||''}"><div class="ginfo"><div class="gtitle">${x.title||''}</div>${x.description?'<div class="gdesc">'+x.description+'</div>':''}</div>`;bgd.appendChild(c);}}
+    const s=cfg.social||{};
+    if(s.facebook){const el=document.getElementById('s-fb');el.href=s.facebook;el.style.display='flex';}
+    if(s.instagram){const el=document.getElementById('s-ig');el.href=s.instagram;el.style.display='flex';}
+    if(s.youtube){const el=document.getElementById('s-yt');el.href=s.youtube;el.style.display='flex';}
+    if(s.youtubeGroup){const el=document.getElementById('s-ytg');el.href=s.youtubeGroup;el.style.display='flex';}
+    const lg=(cfg.gallery||[]).filter(x=>x.published!==false);
+    const lgd=document.getElementById('latest-gallery'); const lge=document.getElementById('lg-empty');
+    if(lg.length===0)lge.style.display='block'; else{lge.style.display='none'; for(const x of lg){const c=document.createElement('div');c.className='gcard';c.innerHTML=`<img class="gimg" src="${x.image||''}"><div class="ginfo"><div class="gtitle">${x.title||''}</div>${x.description?'<div class="gdesc">'+x.description+'</div>':''}</div>`;lgd.appendChild(c);}}
+    const vv=(cfg.learningVideos||[]).filter(x=>x.published!==false);
+    const vgd=document.getElementById('vgrid'); const ve=document.getElementById('vempty');
+    if(vv.length===0)ve.style.display='block'; else{ve.style.display='none'; for(const x of vv){const id=getId(x.url||x.id);const th=x.thumb||(id?`https://img.youtube.com/vi/${id}/hqdefault.jpg`:'');const a=document.createElement('a');a.className='vcard';a.href=x.url||`https://www.youtube.com/watch?v=${id}`;a.target='_blank';a.innerHTML=`<img class="vimg" src="${th}"><div class="vinfo"><div class="vtitle">${x.title||'Video'}</div>${x.description?'<div class="vdesc">'+x.description+'</div>':''}<span class="vwatch">Watch Video ›</span></div>`;vgd.appendChild(a);}}
+    if(cfg.footerText) document.getElementById('foot').textContent=cfg.footerText;
+  }catch(e){}
 }
-
-function renderVideos(){
-  const grid = document.getElementById('videos-grid');
-  grid.innerHTML = '';
-  const list = allVideos.slice(0, shown);
-  for (const v of list) {
-    const id = v.id;
-    const a = document.createElement('a');
-    a.className = 'video-card';
-    a.href = `https://www.youtube.com/watch?v=${id}`;
-    a.target = '_blank';
-    a.innerHTML = `<img class="video-thumb" src="https://img.youtube.com/vi/${id}/hqdefault.jpg" alt=""><div class="video-title">Watch Video</div>`;
-    grid.appendChild(a);
-  }
-  const more = document.getElementById('more-wrap');
-  if (allVideos.length > shown) {
-    more.style.display = 'block';
-  } else {
-    more.style.display = 'none';
-  }
-}
-
-document.getElementById('more-btn').addEventListener('click', function(){
-  shown += 6;
-  renderVideos();
-});
-
-loadConfig();
+load();
 </script>
 </body>
 </html>

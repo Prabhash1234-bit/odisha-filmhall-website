@@ -1,17 +1,29 @@
 {
-  "poster": "community-poster.jpeg",
-  "facebookUrl": "https://www.facebook.com/people/Film-Hall-Odisha/61585487873559/?rdid=RMA2FR9QtpDBQWUU&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1J6DyEQWCv%2F",
-  "instagramUrl": "https://www.instagram.com/filmhallodisha?utm_source=qr&psln=eHE0MDZ3NmZyZWZx",
-  "videos": [
-    {
-      "id": "https://youtube.com/@filmhallodisha?si=Bx9T1jTySUJEYO0E",
-      "url": "https://www.youtube.com/watch?v=https://youtube.com/@filmhallodisha?si=Bx9T1jTySUJEYO0E"
-    }
-  ],
+  "logo": "logo.png",
+  "banner": {
+    "image": "",
+    "heading": "",
+    "textEn": "",
+    "textOdia": "",
+    "slogan": ""
+  },
+  "bannerGallery": [],
+  "gallery": [],
+  "social": {
+    "facebook": "",
+    "instagram": "",
+    "youtube": "",
+    "youtubeGroup": ""
+  },
+  "learningVideos": [],
+  "footerText": "© 2026 FilmHall — An Unique Distribution System | All Rights Reserved",
   "users": [
     {
       "mobile": "7326097670",
       "password": "Barik@270027"
     }
-  ]
+  ],
+  "poster": "community-poster.jpg",
+  "facebookUrl": "https://www.facebook.com/share/1J6DyEQWCv/",
+  "instagramUrl": "https://www.instagram.com/filmhallodisha?utm_source=qr&psln=eHE0MDZ3NmZyZWZx"
 }
