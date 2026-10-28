@@ -7,12 +7,37 @@
     "textOdia": "“ ଆସ ଆମେ ମିଶିବା । ଆସ ଆମେ ଶିଖିବା ।। ”",
     "slogan": "\" ।। ଆମେ ଓଡ଼ିଆ ଭାରି କୁଢ଼ିଆ ।। \""
   },
-  "bannerGallery": [],
+  "bannerGallery": [
+    {
+      "image": "banner-gallery-1.jpeg",
+      "title": "FILMHALL ODISHA",
+      "description": "LOGO",
+      "published": true
+    },
+    {
+      "image": "banner-gallery-2.jpg",
+      "title": "GALLERY",
+      "description": "DEMO",
+      "published": true
+    },
+    {
+      "image": "banner-gallery-3.jpg",
+      "title": "GALLERY",
+      "description": "DEMO",
+      "published": true
+    },
+    {
+      "image": "banner-gallery-4.jpg",
+      "title": "village theatre",
+      "description": "ai",
+      "published": true
+    }
+  ],
   "gallery": [],
   "social": {
-    "facebook": "",
-    "instagram": "",
-    "youtube": "",
+    "facebook": "https://www.facebook.com/share/1J6DyEQWCv/",
+    "instagram": "https://www.instagram.com/filmhallodisha?utm_source=qr&psln=eHE0MDZ3NmZyZWZx",
+    "youtube": "https://youtube.com/@filmhallodisha?si=Bx9T1jTySUJEYO0E",
     "youtubeGroup": ""
   },
   "learningVideos": [],
