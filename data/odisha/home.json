@@ -105,21 +105,21 @@
     {
       "theatre_id": "FH-OD-001",
       "region": "odisha",
-      "name": "BHAIRABI CINEMA",
+      "name": "MAA CHANDI FILMHALL",
       "owner_name": "PRABHASH BARIK",
       "owner_user_id": null,
-      "district": "Cuttack",
-      "address": "THORIA SAHI, Cuttack",
+      "district": "CUTTACK",
+      "address": "TRISULIA, Cuttack",
       "status": "active",
-      "photo_media_id": "med_01M4PTP2M2FSF853HSKJFF",
+      "photo_media_id": "med_01M63HE3P8G948BE9FQ66Z",
       "current_film_title": "AWM - Agney Weds Milan",
       "current_film_media_id": "med_01M4P0DQH7X9W0Z3D12ZZQ",
       "ticket_generator_url": null,
       "record_status": "published",
       "published_at": "2026-10-10T18:27:41.848696+00:00",
       "created_at": "2026-10-10T18:26:12.985887+00:00",
-      "updated_at": "2026-10-29T09:42:55.652315+00:00",
-      "rev": 17,
+      "updated_at": "2026-10-29T09:56:59.380717+00:00",
+      "rev": 21,
       "meta_json": {
         "phone": "7326097670",
         "whatsapp": "7326097670",
@@ -177,11 +177,11 @@
     "med_01M4KHYYXAJ6ECCB5XZSNB": "media/med_01M4KHYYXAJ6ECCB5XZSNB.png",
     "med_01M4P0AHDSNX7G4THQ31MV": "media/med_01M4P0AHDSNX7G4THQ31MV.jpg",
     "med_01M4P0DQH7X9W0Z3D12ZZQ": "media/med_01M4P0DQH7X9W0Z3D12ZZQ.jpg",
-    "med_01M4PTP2M2FSF853HSKJFF": "media/med_01M4PTP2M2FSF853HSKJFF.jpg",
     "med_01M4Q48JCHEX01NHD0BZJD": "media/med_01M4Q48JCHEX01NHD0BZJD.jpeg",
     "med_01M4Q4AZV8GEFA3AJ8GB5A": "media/med_01M4Q4AZV8GEFA3AJ8GB5A.jpeg",
     "med_01M4RS7SQGBJ25D7VT4TXE": "media/med_01M4RS7SQGBJ25D7VT4TXE.jpg",
     "med_01M4VYS1TANEPHY7QYFQNF": "media/med_01M4VYS1TANEPHY7QYFQNF.jpeg",
-    "med_01M4VZ6S3CP2X47E3AS3Y7": "media/med_01M4VZ6S3CP2X47E3AS3Y7.jpeg"
+    "med_01M4VZ6S3CP2X47E3AS3Y7": "media/med_01M4VZ6S3CP2X47E3AS3Y7.jpeg",
+    "med_01M63HE3P8G948BE9FQ66Z": "media/med_01M63HE3P8G948BE9FQ66Z.jpg"
   }
 }
