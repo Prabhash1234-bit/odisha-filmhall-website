@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - FilmHall Odisha</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="edit.css">
+<style>
+  .dash-header{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;background:white;border-bottom:1px solid #eee;}
+  .dash-header h1{color:#C21E56;margin:0;}
+  .dash-actions{display:flex;gap:10px;align-items:center;}
+  .btn{padding:8px 16px;background:linear-gradient(135deg,#C21E56,#8E1440);color:white;border:none;border-radius:6px;cursor:pointer;text-decoration:none;}
+  .btn-ghost{background:white;color:#333;border:1px solid #ddd;}
+  .container{max-width:1200px;margin:30px auto;padding:0 20px;}
+  .tabs{display:flex;gap:10px;margin-bottom:20px;border-bottom:2px solid #eee;}
+  .tab{padding:10px 20px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;}
+  .tab.active{border-bottom-color:#C21E56;color:#C21E56;font-weight:600;}
+  .panel{display:none;background:white;padding:30px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+  .panel.active{display:block;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;}
+  .card{padding:20px;border:1px solid #eee;border-radius:10px;}
+  .card h3{margin-top:0;color:#333;}
+  .form-group{margin-bottom:16px;}
+  .form-group label{display:block;margin-bottom:6px;font-weight:600;color:#333;}
+  .form-group input,.form-group textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;box-sizing:border-box;font-family:inherit;}
+  .form-group textarea{min-height:80px;resize:vertical;}
+  .row{display:flex;gap:10px;}
+  .row .form-group{flex:1;}
+  .save-bar{margin-top:30px;text-align:right;}
+</style>
+</head>
+<body>
+<header class="dash-header">
+  <div>
+    <h1>FilmHall Admin Dashboard</h1>
+    <small id="admin-info"></small>
+  </div>
+  <div class="dash-actions">
+    <a href="index.html" class="btn btn-ghost">View Site</a>
+    <button class="btn btn-ghost" id="logout">Logout</button>
+  </div>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <div class="tab active" data-tab="home">Home Page</div>
+    <div class="tab" data-tab="site">Site Settings</div>
+    <div class="tab" data-tab="theatres">Theatres</div>
+    <div class="tab" data-tab="media">Media</div>
+  </div>
+  
+  <div class="panel active" id="panel-home">
+    <h2>Home Page Content</h2>
+    <p class="muted">Edit home page text, images and links</p>
+    <div class="grid">
+      <div class="card">
+        <h3>Hero Section</h3>
+        <div class="form-group">
+          <label>Hero Title</label>
+          <input type="text" id="hero-title" value="FilmHall Odisha">
+        </div>
+        <div class="form-group">
+          <label>Hero Subtitle</label>
+          <textarea id="hero-subtitle">Discover the best cinema experience across Odisha</textarea>
+        </div>
+      </div>
+      <div class="card">
+        <h3>About Section</h3>
+        <div class="form-group">
+          <label>About Text</label>
+          <textarea id="about-text">FilmHall brings you the latest movies and cinema information across Odisha.</textarea>
+        </div>
+      </div>
+    </div>
+    <div class="save-bar">
+      <button class="btn" onclick="saveHome()">Save Changes</button>
+    </div>
+  </div>
+  
+  <div class="panel" id="panel-site">
+    <h2>Site Settings</h2>
+    <p class="muted">Global site configuration</p>
+    <div class="grid">
+      <div class="card">
+        <h3>Footer</h3>
+        <div class="form-group">
+          <label>Footer Text</label>
+          <input type="text" id="footer-text" value="© 2026 FilmHall Odisha | All Rights Reserved">
+        </div>
+      </div>
+      <div class="card">
+        <h3>Contact</h3>
+        <div class="form-group">
+          <label>Contact Email</label>
+          <input type="email" id="contact-email" value="info@filmhall.in">
+        </div>
+        <div class="form-group">
+          <label>Contact Phone</label>
+          <input type="text" id="contact-phone" value="">
+        </div>
+      </div>
+    </div>
+    <div class="save-bar">
+      <button class="btn" onclick="saveSite()">Save Changes</button>
+    </div>
+  </div>
+  
+  <div class="panel" id="panel-theatres">
+    <h2>Theatres Management</h2>
+    <p class="muted">View and edit all theatres</p>
+    <div id="theatres-list"></div>
+  </div>
+  
+  <div class="panel" id="panel-media">
+    <h2>Media Library</h2>
+    <p class="muted">Manage images and media files</p>
+    <div id="media-list"></div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="admin-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel Login - FilmHall Odisha</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="edit.css">
+<style>
+  .admin-card{max-width:420px;margin:60px auto;background:white;padding:40px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);}
+  .admin-card h1{color:#C21E56;text-align:center;margin-bottom:10px;}
+  .admin-card .muted{color:#666;text-align:center;margin-bottom:30px;}
+  .form-group{margin-bottom:18px;}
+  .form-group label{display:block;margin-bottom:8px;font-weight:600;}
+  .form-group input{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;font-size:15px;}
+  .btn{width:100%;padding:12px;background:linear-gradient(135deg,#C21E56,#8E1440);color:white;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;}
+  .btn:disabled{opacity:0.6;cursor:not-allowed;}
+  .error{color:#d33;text-align:center;margin-top:12px;display:none;}
+  .info{color:#2a7;text-align:center;margin-top:12px;display:none;}
+  .hidden{display:none;}
+</style>
+</head>
+<body class="inner-page">
+<header class="inner-header">
+  <a href="index.html"><img src="logo.png" alt="FilmHall Odisha Logo" class="logo"></a>
+  <a class="back-link" href="index.html">← Back to Home</a>
+</header>
+<main class="page-main">
+  <section class="admin-card">
+    <h1>Admin Panel</h1>
+    <p class="muted">OTP-based secure access</p>
+    
+    <div id="step-phone">
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="phone" placeholder="Enter registered phone number" autocomplete="tel">
+      </div>
+      <button class="btn" id="send-otp">Send OTP</button>
+      <p id="phone-error" class="error"></p>
+      <p id="phone-info" class="info"></p>
+    </div>
+    
+    <div id="step-otp" class="hidden">
+      <div class="form-group">
+        <label>Enter OTP</label>
+        <input type="text" id="otp" placeholder="6-digit OTP" maxlength="6" autocomplete="one-time-code">
+      </div>
+      <button class="btn" id="verify-otp">Verify OTP</button>
+      <p style="text-align:center;margin-top:12px;"><a href="#" id="resend-otp" style="color:#C21E56;">Resend OTP</a></p>
+      <p id="otp-error" class="error"></p>
+    </div>
+    
+    <div id="step-password" class="hidden">
+      <div class="form-group">
+        <label>Set/Enter Password</label>
+        <input type="password" id="admin-pass" placeholder="Enter password" autocomplete="current-password">
+      </div>
+      <button class="btn" id="login-admin">Login to Admin Dashboard</button>
+      <p id="pass-error" class="error"></p>
+    </div>
+  </section>
+</main>
+<footer>
+  <p>© 2026 FilmHall Odisha | All Rights Reserved</p>
+</footer>
+<script src="config.js"></script>
+<script src="admin-login.js"></script>
+</body>
+</html>
