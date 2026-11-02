@@ -136,6 +136,7 @@
         "instagram": "https://www.instagram.com/filmhallodisha",
         "youtube": "https://youtube.com/@filmhallodisha?si=zWpe3n4brt1Gyi9K"
       },
+      "frozen": 0,
       "id": "FH-OD-001"
     },
     {
@@ -163,6 +164,7 @@
       "prices_json": null,
       "payment_qr_media_id": null,
       "social_json": {},
+      "frozen": 0,
       "id": "FH-THR-OD-002"
     }
   ],
