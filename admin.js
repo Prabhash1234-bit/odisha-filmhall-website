@@ -79,10 +79,15 @@
         if (res.status === 401 && !opt.noAuth) { logout("Session ended. Please log in again."); throw new Error("Session ended"); }
         if (!res.ok) {
           var det = d && d.detail;
-          throw new Error(typeof det === "string" ? det : "Could not save (HTTP " + res.status + "). Check the route list at the top of admin.js.");
+          throw new Error(typeof det === "string" ? det : "Could not save (HTTP " + res.status + ").");
         }
         return d;
       });
+    }).catch(function(e) {
+      if (e && e.message && e.message.indexOf('Failed to fetch') !== -1) {
+        throw new Error('Network error: check API CORS/origin. Failed to fetch');
+      }
+      throw e;
     });
   }
   function upload(file, kind, theatreId) {
