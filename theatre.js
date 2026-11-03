@@ -128,47 +128,63 @@
   function renderHero(theatre) {
     var hero = FH.el("section", "theatre-hero");
 
-    var photo = FH.el("img", "theatre-photo");
+    // Theatre photo on top
+    var photoWrap = FH.el("div", "theatre-photo-wrap");
+    var photo = FH.el("img", "theatre-photo-large");
     photo.alt = theatre.name || "FilmHall";
     FH.assignImage(photo, theatre.photo_media_id, "logo.png");
-    hero.appendChild(photo);
+    photoWrap.appendChild(photo);
+    hero.appendChild(photoWrap);
 
-    var info = FH.el("div", "theatre-info");
+    // Info below photo
+    var info = FH.el("div", "theatre-info-center");
     info.appendChild(FH.el("h1", "theatre-name", theatre.name || "FilmHall"));
 
-    var meta = FH.metaText([theatre.owner_name, theatre.district]);
+    var meta = FH.metaText([theatre.district, theatre.owner_name]);
     if (meta) info.appendChild(FH.el("p", "theatre-meta", meta));
 
     var chip = statusChip(theatre.status);
     if (chip) info.appendChild(chip);
 
     if (theatre.current_film_title) {
-      info.appendChild(FH.el("p", "theatre-meta",
-        "Now showing: " + theatre.current_film_title));
+      info.appendChild(FH.el("p", "theatre-nowshowing",
+        "Now Showing: " + theatre.current_film_title));
     }
 
     var meta2 = theatre.meta_json || {};
-    var phone = firstText(meta2.phone, meta2.contact, meta2.contact_number, meta2.mobile);
-    var waNumber = digits(firstText(meta2.whatsapp) || phone);
+    var phone = firstText(meta2.phone, meta2.contact, meta2.contact_number, meta2.mobile, meta2.owner_phone);
+    var waRaw = firstText(meta2.whatsapp, meta2.whatsapp_number, meta2.wa);
+    var waNumber = digits(waRaw || phone);
     if (waNumber.length === 10) waNumber = "91" + waNumber;
 
     if (phone || waNumber) {
+      var actions = FH.el("div", "theatre-contact-row");
       var telDigits = digits(phone || waNumber).replace(/^0+/, "");
-      var actions = FH.el("div", "theatre-actions");
 
       if (telDigits) {
-        var call = externalLink("Call to book", "tel:" + telDigits, "btn-primary");
+        var call = document.createElement("a");
+        call.className = "btn-call";
+        call.href = "tel:" + telDigits;
+        call.innerHTML = '<span class="btn-icon">📞</span> Call for Tickets';
         actions.appendChild(call);
       }
+
       if (waNumber) {
-        var wa = externalLink("WhatsApp", "https://wa.me/" + waNumber, "whatsapp-btn");
+        var wa = document.createElement("a");
+        wa.className = "btn-whatsapp";
+        wa.href = "https://wa.me/" + waNumber;
+        wa.target = "_blank";
+        wa.rel = "noopener noreferrer";
+        wa.innerHTML = '<span class="btn-icon">💬</span> WhatsApp';
         actions.appendChild(wa);
       }
-      if (phone) {
-        var label = FH.el("span", "contact-link", phone);
-        actions.appendChild(label);
-      }
+
       info.appendChild(actions);
+
+      if (phone) {
+        var num = FH.el("p", "theatre-phone-text", "Contact No: " + phone);
+        info.appendChild(num);
+      }
     }
 
     hero.appendChild(info);
@@ -180,7 +196,7 @@
   function renderGallery(items, name) {
     if (!items || !items.length) return;
     var section = FH.el("section", "gallery-section");
-    section.appendChild(FH.el("h2", "gallery-title", "Gallery"));
+    section.appendChild(FH.el("h2", "gallery-title", "Photos"));
 
     var grid = FH.el("div", "gallery-grid");
     items.slice(0, GALLERY_CAP).forEach(function (item) {

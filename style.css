@@ -800,6 +800,147 @@ button:focus-visible {
     }
 }
 
+/* ===== Clean Theatre Page Layout (FilmHall Style) ===== */
+.brand-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 10px auto 18px;
+  max-width: 1100px;
+}
+
+.brand-odisha {
+  height: 64px;
+  max-width: 90%;
+}
+
+.brand-divider {
+  width: 1px;
+  height: 42px;
+  background: var(--fh-line);
+}
+
+.brand-filmhall {
+  height: 38px;
+}
+
+.theatre-hero {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+
+.theatre-photo-wrap {
+  width: 100%;
+  max-width: 980px;
+}
+
+.theatre-photo-large {
+  width: 100%;
+  height: clamp(220px, 46vw, 520px);
+  object-fit: cover;
+  border-radius: var(--fh-radius);
+  border: 1px solid var(--fh-line);
+  box-shadow: var(--fh-shadow);
+}
+
+.theatre-info-center {
+  width: 100%;
+  max-width: 760px;
+  text-align: center;
+}
+
+.theatre-info-center .theatre-name {
+  text-align: center;
+}
+
+.theatre-info-center .theatre-meta {
+  text-align: center;
+}
+
+.theatre-nowshowing {
+  color: var(--fh-ink);
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.theatre-contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.btn-call,
+.btn-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 230px;
+  padding: 14px 26px;
+  border-radius: 999px;
+  font-size: 17px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: var(--fh-shadow);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.btn-call {
+  color: var(--fh-white);
+  background: linear-gradient(90deg, #b71c1c 0%, #d32f2f 100%);
+}
+
+.btn-whatsapp {
+  color: var(--fh-white);
+  background: linear-gradient(90deg, #1fb95a 0%, #25d366 100%);
+}
+
+.btn-call:hover,
+.btn-whatsapp:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.14);
+}
+
+.btn-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.theatre-phone-text {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--fh-ink-muted);
+}
+
+.gallery-section {
+  margin-top: 36px;
+}
+
+.gallery-title {
+  text-align: center;
+  font-size: clamp(20px, 4vw, 28px);
+  color: var(--fh-lotus-deep);
+  margin-bottom: 16px;
+}
+
+@media (max-width: 640px) {
+  .btn-call,
+  .btn-whatsapp {
+    width: 100%;
+    max-width: 320px;
+  }
+  .theatre-photo-large {
+    height: clamp(200px, 58vw, 320px);
+  }
+}
+
 /* ===== Theatre page v2: topbar, Make the Ticket, gallery, social ===== */
 
 /* ---- topbar: Odisha photo beside a small FilmHall logo box ---- */
