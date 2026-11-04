@@ -16,6 +16,7 @@
     login: "/cms/auth/login",
     media: "/cms/media",
     theatre: function (id) { return "/cms/theatres/" + enc(id); },
+    theatreNew: "/cms/theatres",                                     // GUESS
     contentNew: "/cms/contents",                                     // GUESS
     content: function (id) { return "/cms/contents/" + enc(id); },   // GUESS
     linkNew: "/cms/links",                                           // GUESS
@@ -40,6 +41,7 @@
   var app = document.getElementById("app");
   var H = { contents: {}, theatres: [], links: [] };
   var MEDIA = {};
+  var DEFAULTS = {};
   var tab = "home";
 
   /* ---------- helpers ---------- */
@@ -72,22 +74,19 @@
     var h = opt.headers || {};
     if (!opt.noAuth) h.Authorization = "Bearer " + (sessionStorage.getItem(TOKEN_KEY) || "");
     opt.headers = h; opt.credentials = "omit"; opt.mode = "cors";
-    return fetch(ORIGIN + path, opt).then(function (res) {
+    return fetch(ORIGIN + path, opt).catch(function () {
+      throw new Error("Network error: is the backend and tunnel running? (or check API CORS/origin)");
+    }).then(function (res) {
       return res.text().then(function (body) {
         var d = null;
         try { d = body ? JSON.parse(body) : null; } catch (e) { d = null; }
         if (res.status === 401 && !opt.noAuth) { logout("Session ended. Please log in again."); throw new Error("Session ended"); }
         if (!res.ok) {
           var det = d && d.detail;
-          throw new Error(typeof det === "string" ? det : "Could not save (HTTP " + res.status + ").");
+          throw new Error(typeof det === "string" ? det : "Could not save (HTTP " + res.status + "). Check the route list at the top of admin.js.");
         }
         return d;
       });
-    }).catch(function(e) {
-      if (e && e.message && e.message.indexOf('Failed to fetch') !== -1) {
-        throw new Error('Network error: check API CORS/origin. Failed to fetch');
-      }
-      throw e;
     });
   }
   function upload(file, kind, theatreId) {
@@ -155,7 +154,14 @@
       .catch(function () { return getJSON(DATA + "/home.json"); })
       .then(function (p) { H = p || H; MEDIA = Object.assign({}, H.media || {}); });
   }
-  function start() { return load().then(render); }
+  /* Texts not yet saved in the CMS show the website\u2019s built-in wording, read from index.html. */
+  function loadDefaults() {
+    return fetch("index.html", { cache: "no-cache" }).then(function (r) { return r.text(); }).then(function (html) {
+      var doc = new DOMParser().parseFromString(html, "text/html");
+      doc.querySelectorAll("[data-cms]").forEach(function (n) { DEFAULTS[n.getAttribute("data-cms")] = n.textContent.trim(); });
+    }).catch(function () {});
+  }
+  function start() { return Promise.all([load(), loadDefaults()]).then(render); }
 
   /* ---------- shell ---------- */
   function render() {
@@ -184,7 +190,7 @@
       card.appendChild(el("h2", null, f.label));
       card.appendChild(el("p", "muted", f.key));
 
-      var current = f.author ? plain(row && (row.summary || row.body_json)) : plain(row && (row.summary || row.title || row.body_json));
+      var current = f.author ? plain(row && (row.summary || row.body_json)) : (plain(row && (row.summary || row.title || row.body_json)) || DEFAULTS[f.key] || "");
       var text = null, author = null, link = null, file = null;
       if (f.kind === "image") {
         var prev = thumb(row && row.banner_media_id);
@@ -236,8 +242,28 @@
     var a = s.split("\n").map(function (x) { return x.trim(); }).filter(Boolean);
     return a.length > 1 ? a : a[0] || null;
   }
+  function nextHallId() {
+    var max = 0;
+    (H.theatres || []).forEach(function (t) {
+      var m = /(\d+)\s*$/.exec(String(t.theatre_id || t.id || ""));
+      if (m) max = Math.max(max, parseInt(m[1], 10));
+    });
+    return "FH-THR-OD-" + String(max + 1).padStart(3, "0");
+  }
   function hallsTab(main) {
-    main.appendChild(el("p", "muted", "Tap Edit on a hall to change its page: name, photo, now-showing film, ticket link, call/WhatsApp numbers, gallery and social links."));
+    var add = el("button", "primary", "+ Add new film hall");
+    add.style.marginBottom = "14px";
+    var slot = el("div");
+    add.onclick = function () {
+      if (slot.firstChild) { slot.replaceChildren(); return; }
+      var card = el("div", "card"), body = el("div");
+      card.appendChild(el("h2", null, "New film hall"));
+      card.appendChild(el("p", "muted", "Fill the parts below in the same order as the public hall page."));
+      card.appendChild(body); slot.appendChild(card);
+      hallForm(body, {}, nextHallId(), true);
+    };
+    main.appendChild(add); main.appendChild(slot);
+    main.appendChild(el("p", "muted", "Or tap Edit on an existing hall to change its page."));
     (H.theatres || []).forEach(function (t) {
       var id = t.theatre_id || t.id;
       var card = el("div", "card"), top = el("div", "row");
@@ -250,49 +276,104 @@
       var body = el("div"); body.hidden = true; card.appendChild(body);
       edit.onclick = function () {
         body.hidden = !body.hidden;
-        if (!body.hidden && !body.firstChild) hallForm(body, t, id);
+        if (!body.hidden && !body.firstChild) hallForm(body, t, id, false);
       };
       main.appendChild(card);
     });
     if (!(H.theatres || []).length) main.appendChild(el("p", "muted", "No film halls published yet."));
   }
-  function hallForm(body, t, id) {
+  function part(body, title, hint) {
+    var p = el("div");
+    p.style.cssText = "border-top:1px solid var(--line);margin-top:18px;padding-top:6px";
+    var h = el("h3", null, title); h.style.cssText = "margin:8px 0 2px;font-size:16px";
+    p.appendChild(h);
+    if (hint) p.appendChild(el("p", "muted", hint));
+    body.appendChild(p); return p;
+  }
+  function picker(currentId) {
+    var wrap = el("div", "row"), prev = thumb(currentId), inp = fileInput(false);
+    prev.style.width = "140px"; prev.style.height = "100px";
+    inp.onchange = function () { if (inp.files[0]) prev.src = URL.createObjectURL(inp.files[0]); };
+    wrap.appendChild(prev); wrap.appendChild(inp);
+    return { node: wrap, input: inp };
+  }
+  var JSON_H = { "Content-Type": "application/json" };
+
+  /* The form follows the public hall page, top to bottom:
+     photo, details, Book ticket, film poster, gallery, Join with us. */
+  function hallForm(body, t, id, isNew) {
     var meta = Object.assign({}, t.meta_json), soc = Object.assign({}, t.social_json || {});
+    var p;
+
+    p = part(body, "Theatre photo", "The big photo at the top of the hall page.");
+    var photo = picker(t.photo_media_id); p.appendChild(photo.node);
+
+    p = part(body, "Hall details");
+    var idIn = isNew ? input(id) : null;
     var name = input(t.name), owner = input(t.owner_name), dist = input(t.district), addr = input(t.address);
-    var film = input(t.current_film_title), tick = input(t.ticket_generator_url, "url");
-    var phone = input(plain(meta.phone)), wa = input(plain(meta.whatsapp));
-    var s = { facebook: area(lines(soc.facebook || meta.facebook)), instagram: area(lines(soc.instagram || meta.instagram)), youtube: area(lines(soc.youtube || meta.youtube)) };
-    var photo = fileInput(false), poster = fileInput(false), gallery = fileInput(true);
-    body.appendChild(el("hr", "sep"));
-    [["Film hall name", name], ["Owner name", owner], ["District", dist], ["Address", addr],
-     ["Now showing (film title)", film], ["Ticket link", tick], ["Call number", phone], ["WhatsApp number", wa]]
-      .forEach(function (p) { body.appendChild(field(p[0], p[1])); });
-    body.appendChild(field("Hall photo", (function () { var r = el("div", "row"); r.appendChild(thumb(t.photo_media_id)); r.appendChild(photo); return r; })()));
-    body.appendChild(field("Now-showing poster", (function () { var r = el("div", "row"); r.appendChild(thumb(t.current_film_media_id)); r.appendChild(poster); return r; })()));
-    var gal = el("div", "gal");
-    body.appendChild(field("Gallery photos (add more)", gallery)); body.appendChild(gal);
-    getJSON(ORIGIN + "/cms/public/" + enc(REGION) + "/theatres/" + enc(id))
-      .catch(function () { return getJSON(DATA + "/theatre/" + enc(id) + ".json"); })
-      .then(function (p) { ((p && p.gallery && p.gallery.items) || []).forEach(function (g) { gal.appendChild(thumb(g.id)); }); })
-      .catch(function () {});
-    body.appendChild(el("p", "muted", "Social links: one per line. A post link shows as an embed on the hall page."));
-    body.appendChild(field("Facebook", s.facebook)); body.appendChild(field("Instagram", s.instagram)); body.appendChild(field("YouTube", s.youtube));
-    var save = el("button", "primary", "Save this hall"); save.style.marginTop = "12px";
+    if (idIn) p.appendChild(field("Hall ID (filled in automatically)", idIn));
+    p.appendChild(field("Film hall name", name)); p.appendChild(field("Owner name", owner));
+    p.appendChild(field("District", dist)); p.appendChild(field("Address", addr));
+
+    p = part(body, "Book ticket", "Numbers for the Call and WhatsApp buttons.");
+    var phone = input(plain(meta.phone)), wa = input(plain(meta.whatsapp)), tick = input(t.ticket_generator_url, "url");
+    p.appendChild(field("Call number", phone)); p.appendChild(field("WhatsApp number", wa));
+    p.appendChild(field("Online ticket link (optional)", tick));
+
+    p = part(body, "Film poster", "The film showing now.");
+    var film = input(t.current_film_title), poster = picker(t.current_film_media_id);
+    p.appendChild(field("Film name", film)); p.appendChild(poster.node);
+
+    p = part(body, "Gallery", isNew ? "Pick several photos at once. You can add more later." : "Add more photos.");
+    var gallery = fileInput(true), gal = el("div", "gal");
+    p.appendChild(gallery); p.appendChild(gal);
+    if (!isNew) {
+      getJSON(ORIGIN + "/cms/public/" + enc(REGION) + "/theatres/" + enc(id))
+        .catch(function () { return getJSON(DATA + "/theatre/" + enc(id) + ".json"); })
+        .then(function (d) { ((d && d.gallery && d.gallery.items) || []).forEach(function (g) { gal.appendChild(thumb(g.id)); }); })
+        .catch(function () {});
+    }
+    gallery.onchange = function () {
+      gal.querySelectorAll("[data-new]").forEach(function (n) { n.remove(); });
+      Array.prototype.slice.call(gallery.files).forEach(function (f) {
+        var im = el("img", "thumb"); im.alt = ""; im.src = URL.createObjectURL(f); im.setAttribute("data-new", "1"); gal.appendChild(im);
+      });
+    };
+
+    p = part(body, "Join with us", "Facebook, YouTube and Instagram buttons. One link per line; the first one is used for the button.");
+    var s = { facebook: area(lines(soc.facebook || meta.facebook)), youtube: area(lines(soc.youtube || meta.youtube)), instagram: area(lines(soc.instagram || meta.instagram)) };
+    Object.keys(s).forEach(function (k) { s[k].style.minHeight = "48px"; });
+    p.appendChild(field("Facebook (F)", s.facebook)); p.appendChild(field("YouTube (Y)", s.youtube)); p.appendChild(field("Instagram (I)", s.instagram));
+
+    var save = el("button", "primary", isNew ? "Create film hall" : "Save this hall"); save.style.marginTop = "18px";
     save.onclick = function () {
       busy(save, function () {
-        var patch = { name: name.value.trim(), owner_name: owner.value.trim(), district: dist.value.trim(), address: addr.value.trim(),
-                      current_film_title: film.value.trim(), ticket_generator_url: tick.value.trim() || null };
-        var chain = Promise.resolve();
-        if (photo.files[0]) chain = chain.then(function () { return upload(photo.files[0], "photo", id).then(function (m) { patch.photo_media_id = m; }); });
-        if (poster.files[0]) chain = chain.then(function () { return upload(poster.files[0], "photo", id).then(function (m) { patch.current_film_media_id = m; }); });
-        Array.prototype.slice.call(gallery.files).forEach(function (f) { chain = chain.then(function () { return upload(f, "photo", id); }); });
+        var hid = idIn ? idIn.value.trim() : id;
+        var m2 = Object.assign({}, meta), s2 = Object.assign({}, soc);
+        [["phone", phone.value], ["whatsapp", wa.value]].forEach(function (q) { if (q[1].trim()) m2[q[0]] = q[1].trim(); else delete m2[q[0]]; });
+        ["facebook", "instagram", "youtube"].forEach(function (k) { var v = unlines(s[k].value); if (v) s2[k] = v; else delete s2[k]; delete m2[k]; });
+        var data = { name: name.value.trim(), owner_name: owner.value.trim(), district: dist.value.trim(), address: addr.value.trim(),
+                     current_film_title: film.value.trim() || null, ticket_generator_url: tick.value.trim() || null,
+                     meta_json: m2, social_json: s2 };
+        var patch = {};
+        var chain = Promise.resolve().then(function () {
+          if (!isNew) return;
+          if (!/^[A-Za-z0-9_-]{3,40}$/.test(hid)) throw new Error("Hall ID can use letters, numbers, - and _ only.");
+          if (!data.name) throw new Error("Please enter the film hall name.");
+          return api(ROUTES.theatreNew, { method: "POST", headers: JSON_H,
+            body: JSON.stringify(Object.assign({ theatre_id: hid, region: REGION, status: "active", record_status: "published" }, data)) });
+        });
+        if (photo.input.files[0]) chain = chain.then(function () { return upload(photo.input.files[0], "photo", hid).then(function (m) { patch.photo_media_id = m; }); });
+        if (poster.input.files[0]) chain = chain.then(function () { return upload(poster.input.files[0], "photo", hid).then(function (m) { patch.current_film_media_id = m; }); });
+        Array.prototype.slice.call(gallery.files).forEach(function (f) { chain = chain.then(function () { return upload(f, "photo", hid); }); });
         return chain.then(function () {
-          var m2 = Object.assign({}, meta), s2 = Object.assign({}, soc);
-          [["phone", phone.value], ["whatsapp", wa.value]].forEach(function (p) { if (p[1].trim()) m2[p[0]] = p[1].trim(); else delete m2[p[0]]; });
-          ["facebook", "instagram", "youtube"].forEach(function (k) { var v = unlines(s[k].value); if (v) s2[k] = v; else delete s2[k]; delete m2[k]; });
-          patch.meta_json = m2; patch.social_json = s2;
-          return api(ROUTES.theatre(id), { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) });
-        }).then(function () { Object.assign(t, patch); });
+          if (!isNew) Object.assign(patch, data);
+          if (!Object.keys(patch).length) return;
+          return api(ROUTES.theatre(hid), { method: "PATCH", headers: JSON_H, body: JSON.stringify(patch) });
+        }).then(function () {
+          if (isNew) { H.theatres.push(Object.assign({ theatre_id: hid, id: hid, region: REGION, status: "active" }, data, patch)); render(); }
+          else Object.assign(t, data, patch);
+        });
       });
     };
     body.appendChild(save);
