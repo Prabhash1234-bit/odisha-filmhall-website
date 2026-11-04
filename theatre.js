@@ -128,64 +128,19 @@
   function renderHero(theatre) {
     var hero = FH.el("section", "theatre-hero");
 
-    // Theatre photo on top
-    var photoWrap = FH.el("div", "theatre-photo-wrap");
-    var photo = FH.el("img", "theatre-photo-large");
+    var photo = FH.el("img", "theatre-photo");
     photo.alt = theatre.name || "FilmHall";
     FH.assignImage(photo, theatre.photo_media_id, "logo.png");
-    photoWrap.appendChild(photo);
-    hero.appendChild(photoWrap);
+    hero.appendChild(photo);
 
-    // Info below photo
-    var info = FH.el("div", "theatre-info-center");
+    var info = FH.el("div", "theatre-info");
     info.appendChild(FH.el("h1", "theatre-name", theatre.name || "FilmHall"));
 
-    var meta = FH.metaText([theatre.district, theatre.owner_name]);
+    var meta = FH.metaText([theatre.owner_name, theatre.district]);
     if (meta) info.appendChild(FH.el("p", "theatre-meta", meta));
 
     var chip = statusChip(theatre.status);
     if (chip) info.appendChild(chip);
-
-    if (theatre.current_film_title) {
-      info.appendChild(FH.el("p", "theatre-nowshowing",
-        "Now Showing: " + theatre.current_film_title));
-    }
-
-    var meta2 = theatre.meta_json || {};
-    var phone = firstText(meta2.phone, meta2.contact, meta2.contact_number, meta2.mobile, meta2.owner_phone);
-    var waRaw = firstText(meta2.whatsapp, meta2.whatsapp_number, meta2.wa);
-    var waNumber = digits(waRaw || phone);
-    if (waNumber.length === 10) waNumber = "91" + waNumber;
-
-    if (phone || waNumber) {
-      var actions = FH.el("div", "theatre-contact-row");
-      var telDigits = digits(phone || waNumber).replace(/^0+/, "");
-
-      if (telDigits) {
-        var call = document.createElement("a");
-        call.className = "btn-call";
-        call.href = "tel:" + telDigits;
-        call.innerHTML = '<span class="btn-icon">📞</span> Call for Tickets';
-        actions.appendChild(call);
-      }
-
-      if (waNumber) {
-        var wa = document.createElement("a");
-        wa.className = "btn-whatsapp";
-        wa.href = "https://wa.me/" + waNumber;
-        wa.target = "_blank";
-        wa.rel = "noopener noreferrer";
-        wa.innerHTML = '<span class="btn-icon">💬</span> WhatsApp';
-        actions.appendChild(wa);
-      }
-
-      info.appendChild(actions);
-
-      if (phone) {
-        var num = FH.el("p", "theatre-phone-text", "Contact No: " + phone);
-        info.appendChild(num);
-      }
-    }
 
     hero.appendChild(info);
     return hero;
@@ -196,7 +151,7 @@
   function renderGallery(items, name) {
     if (!items || !items.length) return;
     var section = FH.el("section", "gallery-section");
-    section.appendChild(FH.el("h2", "gallery-title", "Photos"));
+    section.appendChild(FH.el("h2", "gallery-title", "Gallery"));
 
     var grid = FH.el("div", "gallery-grid");
     items.slice(0, GALLERY_CAP).forEach(function (item) {
@@ -287,6 +242,64 @@
     if (first) first.click();
   }
 
+  /* ---------- Book ticket (Call + WhatsApp, plus Book online when a link is set) ---------- */
+
+  function renderBook(theatre) {
+    var m = theatre.meta_json || {};
+    var phone = firstText(m.phone, m.contact, m.contact_number, m.mobile);
+    var wa = firstText(m.whatsapp) || phone;
+    var waNumber = digits(wa);
+    if (waNumber.length === 10) waNumber = "91" + waNumber;
+    var ticket = FH.safeUrl(theatre.ticket_generator_url);
+    var telDigits = digits(phone || wa).replace(/^0+/, "");
+    if (!ticket && !telDigits && !waNumber) return;
+
+    var section = FH.el("section", "book-section");
+    section.appendChild(FH.el("h2", "gallery-title", "Book ticket"));
+    var actions = FH.el("div", "theatre-actions");
+    if (ticket) actions.appendChild(externalLink("Book online", ticket, "btn-primary"));
+    if (telDigits) actions.appendChild(externalLink("Call " + (phone || telDigits), "tel:" + telDigits, "btn-primary"));
+    if (waNumber) actions.appendChild(externalLink("WhatsApp " + (wa || ""), "https://wa.me/" + waNumber, "whatsapp-btn"));
+    section.appendChild(actions);
+    page.appendChild(section);
+  }
+
+  /* ---------- film poster (the film now showing) ---------- */
+
+  function renderPoster(theatre) {
+    if (!theatre.current_film_media_id) return;
+    var section = FH.el("section", "poster-section");
+    section.appendChild(FH.el("h2", "gallery-title", "Now showing"));
+    var img = FH.el("img", "film-poster");
+    img.alt = theatre.current_film_title || "Film poster";
+    FH.assignImage(img, theatre.current_film_media_id, "logo.png");
+    section.appendChild(img);
+    if (theatre.current_film_title) section.appendChild(FH.el("p", "poster-title", theatre.current_film_title));
+    page.appendChild(section);
+  }
+
+  /* ---------- Join with us (F / Y / I buttons) ---------- */
+
+  function renderJoin(social) {
+    var items = [["facebook", "F", "Facebook"], ["youtube", "Y", "YouTube"], ["instagram", "I", "Instagram"]];
+    var row = FH.el("div", "join-row");
+    var any = false;
+    items.forEach(function (it) {
+      var url = social[it[0]][0];
+      if (!url) return;
+      any = true;
+      var a = externalLink(it[1], url, "join-btn");
+      a.setAttribute("aria-label", it[2]);
+      a.title = it[2];
+      row.appendChild(a);
+    });
+    if (!any) return;
+    var section = FH.el("section", "join-section");
+    section.appendChild(FH.el("h2", "gallery-title", "Join with us"));
+    section.appendChild(row);
+    page.appendChild(section);
+  }
+
   /* ---------- main render ---------- */
 
   function renderTheatre(theatre, odishaLogoId, filmhallLogoId) {
@@ -294,11 +307,13 @@
 
     page.appendChild(renderBrand(odishaLogoId, filmhallLogoId));
     page.appendChild(renderHero(theatre));
-
+    renderBook(theatre);
+    renderPoster(theatre);
     renderGallery(theatre.gallery && theatre.gallery.items, theatre.name);
 
-    var affinity = theatre.social_json || theatre.meta_json || {};
-    renderSocial(buildSocial(affinity), theatre.name);
+    var own = theatre.social_json || {}, meta = theatre.meta_json || {}, merged = {};
+    ["facebook", "instagram", "youtube"].forEach(function (k) { merged[k] = own[k] || meta[k]; });
+    renderJoin(buildSocial(merged));
   }
 
   function boot() {
