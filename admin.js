@@ -1,33 +1,21 @@
-/* FilmHall Odisha admin panel.
-   Login -> dashboard showing the current text, photos and links -> edit -> Save.
-   Everything is saved to the FilmHall CMS (api.filmhall.in), the same place the HQ app writes to. */
+/* FilmHall Odisha admin (version 2).
+   Everything is saved straight into this GitHub repo in ONE commit per save,
+   so there is no CMS, tunnel or publish script. GitHub Pages then updates the site in about a minute.
+   Login = a GitHub token limited to this one repo (entered here, never stored in the repo). */
 (function () {
   "use strict";
 
-  var ORIGIN = String(window.FILMHALL_CMS_ORIGIN || "https://api.filmhall.in").replace(/\/+$/, "");
-  var REGION = String(window.FILMHALL_CMS_REGION || "odisha");
-  var DATA = String(window.FILMHALL_SITE_DATA || "data").replace(/\/+$/, "") + "/" + encodeURIComponent(REGION);
-  var TOKEN_KEY = "fh_admin_token";
+  var OWNER = "Prabhash1234-bit", REPO = "odisha-filmhall-website", BRANCH = "main";
+  var REGION = "odisha", DATA = "data/odisha";
+  var API = "https://api.github.com/repos/" + OWNER + "/" + REPO;
+  var TOKEN_KEY = "fh_gh_token", MAX_GALLERY = 4;
   var enc = encodeURIComponent;
-
-  /* API routes. login, media and theatre are the same calls edit.js already makes.
-     The routes marked GUESS are assumptions: if your API uses other paths, change them here only. */
-  var ROUTES = {
-    login: "/cms/auth/login",
-    media: "/cms/media",
-    theatre: function (id) { return "/cms/theatres/" + enc(id); },
-    theatreNew: "/cms/theatres",                                     // GUESS
-    contentNew: "/cms/contents",                                     // GUESS
-    content: function (id) { return "/cms/contents/" + enc(id); },   // GUESS
-    linkNew: "/cms/links",                                           // GUESS
-    link: function (id) { return "/cms/links/" + enc(id); }          // GUESS
-  };
 
   var HOME_FIELDS = [
     { key: "site.title", label: "Site title", kind: "text" },
     { key: "site.tagline", label: "Tagline", kind: "area" },
     { key: "site.intro", label: "Intro paragraph", kind: "area" },
-    { key: "site.logo", label: "Logo", kind: "image" },
+    { key: "site.logo", label: "Logo", kind: "image", png: true },
     { key: "home.banner", label: "Banner photo and its link", kind: "image", link: true },
     { key: "home.quote", label: "Quote (and author)", kind: "area", author: true },
     { key: "hall.section_title", label: "Film halls heading", kind: "text" },
@@ -39,12 +27,9 @@
   ];
 
   var app = document.getElementById("app");
-  var H = { contents: {}, theatres: [], links: [] };
-  var MEDIA = {};
-  var DEFAULTS = {};
-  var tab = "home";
+  var HOME = null, DEFAULTS = {}, tab = "halls";
 
-  /* ---------- helpers ---------- */
+  /* ---------- small helpers ---------- */
   function el(tag, cls, text) {
     var n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -54,75 +39,145 @@
   function toast(msg, isErr) {
     var t = document.getElementById("toast");
     t.textContent = msg; t.className = isErr ? "err" : ""; t.style.display = "block";
-    clearTimeout(toast.t); toast.t = setTimeout(function () { t.style.display = "none"; }, 3500);
+    clearTimeout(toast.t); toast.t = setTimeout(function () { t.style.display = "none"; }, isErr ? 6000 : 4500);
   }
-  function mediaUrl(id) { return MEDIA[id] || ORIGIN + "/cms/public/media/" + enc(id) + "/file"; }
+  function field(label, node) { var w = el("div"); w.appendChild(el("label", null, label)); w.appendChild(node); return w; }
+  function input(v, type) { var i = el("input"); i.type = type || "text"; i.value = v || ""; return i; }
+  function area(v) { var a = el("textarea"); a.value = v || ""; return a; }
+  function fileInput(accept) { var f = el("input"); f.type = "file"; f.accept = accept || "image/*"; return f; }
   function plain(v) {
     if (v == null) return "";
     if (typeof v === "string") return v.trim();
     if (typeof v === "object" && typeof v.text === "string") return v.text.trim();
     return "";
   }
-  function getJSON(url) {
-    return fetch(url, { cache: "no-cache" }).then(function (r) {
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      return r.json();
-    });
-  }
-  function api(path, opt) {
-    opt = opt || {};
-    var h = opt.headers || {};
-    if (!opt.noAuth) h.Authorization = "Bearer " + (sessionStorage.getItem(TOKEN_KEY) || "");
-    opt.headers = h; opt.credentials = "omit"; opt.mode = "cors";
-    return fetch(ORIGIN + path, opt).catch(function () {
-      throw new Error("Network error: is the backend and tunnel running? (or check API CORS/origin)");
-    }).then(function (res) {
-      return res.text().then(function (body) {
-        var d = null;
-        try { d = body ? JSON.parse(body) : null; } catch (e) { d = null; }
-        if (res.status === 401 && !opt.noAuth) { logout("Session ended. Please log in again."); throw new Error("Session ended"); }
-        if (!res.ok) {
-          var det = d && d.detail;
-          throw new Error(typeof det === "string" ? det : "Could not save (HTTP " + res.status + "). Check the route list at the top of admin.js.");
-        }
-        return d;
-      });
-    });
-  }
-  function upload(file, kind, theatreId) {
-    var q = "?region=" + enc(REGION) + "&kind=" + kind + "&filename=" + enc(file.name) +
-            (theatreId ? "&owner_theatre_id=" + enc(theatreId) : "");
-    return api(ROUTES.media + q, { method: "POST", headers: { "Content-Type": file.type || "application/octet-stream" }, body: file })
-      .then(function (r) {
-        var id = r && (r.id || r.media_id);
-        if (!id) throw new Error("Upload worked but no media id came back.");
-        return id;
-      });
-  }
-  function field(label, node) {
-    var w = el("div"); w.appendChild(el("label", null, label)); w.appendChild(node); return w;
-  }
-  function input(value, type) {
-    var i = el("input"); i.type = type || "text"; i.value = value || ""; return i;
-  }
-  function area(value) { var a = el("textarea"); a.value = value || ""; return a; }
-  function fileInput(multiple, accept) {
-    var f = el("input"); f.type = "file"; f.accept = accept || "image/*"; f.multiple = !!multiple; return f;
-  }
-  function thumb(id) {
-    var img = el("img", "thumb"); img.alt = "";
-    if (id) img.src = mediaUrl(id);
-    return img;
+  function stripQ(p) { return String(p || "").split("?")[0]; }
+  function mediaPath(id, extra) { return (extra && extra[id]) || (HOME && HOME.media && HOME.media[id]) || ""; }
+  function thumb(path, w, h) {
+    var i = el("img", "thumb"); i.alt = "";
+    if (path) i.src = path;
+    if (w) { i.style.width = w + "px"; i.style.height = h + "px"; }
+    return i;
   }
   function busy(btn, work) {
     btn.disabled = true;
-    return work().then(function () { toast("Saved"); }, function (e) { if (e.message !== "Session ended") toast(e.message, true); })
+    return Promise.resolve().then(work)
+      .then(function (msg) { toast(msg || "Published. The website updates in about a minute."); },
+            function (e) { if (e.message !== "Token rejected") toast(e.message, true); })
       .then(function () { btn.disabled = false; });
+  }
+  function part(body, title, hint) {
+    var p = el("div"); p.style.cssText = "border-top:1px solid var(--line);margin-top:18px;padding-top:6px";
+    var h = el("h3", null, title); h.style.cssText = "margin:8px 0 2px;font-size:16px";
+    p.appendChild(h);
+    if (hint) p.appendChild(el("p", "muted", hint));
+    body.appendChild(p); return p;
+  }
+
+  /* ---------- GitHub access ---------- */
+  function token() { return sessionStorage.getItem(TOKEN_KEY) || localStorage.getItem(TOKEN_KEY) || ""; }
+  function hdrs(extra) {
+    return Object.assign({ Authorization: "Bearer " + token(), "X-GitHub-Api-Version": "2022-11-28" }, extra || {});
+  }
+  function gh(path, opt) {
+    opt = opt || {};
+    var h = hdrs({ Accept: "application/vnd.github+json" });
+    if (opt.body) h["Content-Type"] = "application/json";
+    return fetch(API + path, { method: opt.method || "GET", headers: h, body: opt.body, cache: "no-store" })
+      .catch(function () { throw new Error("Cannot reach GitHub. Check your internet connection."); })
+      .then(function (r) {
+        if (r.status === 401) { logout("This GitHub token is not valid or has expired. Please log in again."); throw new Error("Token rejected"); }
+        return r.text().then(function (b) {
+          var d = null; try { d = b ? JSON.parse(b) : null; } catch (e) { d = null; }
+          if (!r.ok) {
+            if (r.status === 403 || r.status === 404) throw new Error("GitHub refused this (" + r.status + "). Check that the token has Contents: Read and write for this repo.");
+            if (r.status === 422) throw new Error("GitHub changed while saving. Reload the page and try again.");
+            throw new Error((d && d.message) || "GitHub error " + r.status);
+          }
+          return d;
+        });
+      });
+  }
+  function readText(path) {
+    return fetch(API + "/contents/" + path.split("/").map(enc).join("/") + "?ref=" + BRANCH,
+      { headers: hdrs({ Accept: "application/vnd.github.raw+json" }), cache: "no-store" })
+      .catch(function () { throw new Error("Cannot reach GitHub. Check your internet connection."); })
+      .then(function (r) {
+        if (r.status === 404) return null;
+        if (!r.ok) throw new Error("Could not read " + path + " (HTTP " + r.status + ")");
+        return r.text();
+      });
+  }
+  /* One commit for any number of files: files = [{path, text | b64}], deletes = [path] */
+  function commit(files, deletes, message) {
+    var head, base;
+    return gh("/git/ref/heads/" + BRANCH).then(function (r) { head = r.object.sha; return gh("/git/commits/" + head); })
+      .then(function (c) {
+        base = c.tree.sha;
+        return Promise.all(files.map(function (f) {
+          var body = f.b64 != null ? { content: f.b64, encoding: "base64" } : { content: f.text, encoding: "utf-8" };
+          return gh("/git/blobs", { method: "POST", body: JSON.stringify(body) })
+            .then(function (b) { return { path: f.path, mode: "100644", type: "blob", sha: b.sha }; });
+        }));
+      })
+      .then(function (entries) {
+        deletes.forEach(function (p) { entries.push({ path: p, mode: "100644", type: "blob", sha: null }); });
+        return gh("/git/trees", { method: "POST", body: JSON.stringify({ base_tree: base, tree: entries }) });
+      })
+      .then(function (t) { return gh("/git/commits", { method: "POST", body: JSON.stringify({ message: message, tree: t.sha, parents: [head] }) }); })
+      .then(function (c) { return gh("/git/refs/heads/" + BRANCH, { method: "PATCH", body: JSON.stringify({ sha: c.sha }) }); });
+  }
+  /* Re-read home.json right before saving so nothing newer is overwritten. */
+  function freshHome() {
+    return readText(DATA + "/home.json").then(function (t) {
+      if (!t) throw new Error("data/odisha/home.json was not found in the repo.");
+      var H = JSON.parse(t);
+      H.contents = H.contents || {}; H.theatres = H.theatres || []; H.links = H.links || []; H.media = H.media || {};
+      return H;
+    });
+  }
+  function homeFile(H) { return { path: DATA + "/home.json", text: JSON.stringify(H, null, 2) + "\n" }; }
+
+  /* ---------- photos: resized in the browser, kept sharp ---------- */
+  function prep(file, max, quality, png) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onload = function () {
+        var s = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+        var c = document.createElement("canvas");
+        c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+        var x = c.getContext("2d");
+        if (!png) { x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); }
+        x.imageSmoothingQuality = "high"; x.drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(function (b) {
+          URL.revokeObjectURL(url);
+          if (!b) return reject(new Error("Could not process that photo."));
+          var fr = new FileReader();
+          fr.onload = function () { resolve({ b64: String(fr.result).split(",")[1], ext: png ? "png" : "jpg" }); };
+          fr.readAsDataURL(b);
+        }, png ? "image/png" : "image/jpeg", quality);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error("That file is not a photo I can read.")); };
+      img.src = url;
+    });
+  }
+  function picker(path, hint) {
+    var wrap = el("div", "row"), prev = thumb(path, 140, 100), inp = fileInput();
+    var note = el("p", "muted"); note.style.width = "100%";
+    inp.onchange = function () {
+      var f = inp.files[0]; if (!f) return;
+      var u = URL.createObjectURL(f); prev.src = u; note.textContent = "";
+      var probe = new Image();
+      probe.onload = function () { if (hint && probe.naturalWidth < hint) note.textContent = "This photo is small (" + probe.naturalWidth + " px wide). It may look blurry; use a bigger one if you can."; };
+      probe.src = u;
+    };
+    wrap.appendChild(prev); wrap.appendChild(inp); wrap.appendChild(note);
+    return { node: wrap, input: inp };
   }
 
   /* ---------- login ---------- */
   function logout(msg) {
-    sessionStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_KEY); localStorage.removeItem(TOKEN_KEY);
     showLogin(msg);
   }
   function showLogin(msg) {
@@ -130,40 +185,38 @@
     var box = el("div"); box.id = "login";
     var card = el("div", "card");
     card.appendChild(el("h2", null, "FilmHall Odisha admin"));
-    card.appendChild(el("p", "muted", msg || "Sign in to edit the website."));
-    var u = input("", "text"); u.autocomplete = "username";
-    var p = input("", "password"); p.autocomplete = "current-password";
-    var b = el("button", "primary", "Log in"); b.style.marginTop = "12px";
+    card.appendChild(el("p", "muted", msg || "Paste your GitHub token for this website to log in."));
+    var t = input("", "password"); t.autocomplete = "off"; t.placeholder = "github_pat_...";
+    var rem = el("input"); rem.type = "checkbox";
+    var remLab = el("label"); remLab.style.cssText = "display:flex;gap:8px;align-items:center;margin:12px 0"; remLab.appendChild(rem); remLab.appendChild(document.createTextNode("Keep me logged in on this device"));
+    var b = el("button", "primary", "Log in");
     function go() {
       busy(b, function () {
-        return api(ROUTES.login, { method: "POST", noAuth: true, headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ handle: u.value.trim(), password: p.value }) })
-          .then(function (d) { sessionStorage.setItem(TOKEN_KEY, d.token); return start(); });
+        var v = t.value.trim();
+        if (!v) throw new Error("Paste your token first.");
+        (rem.checked ? localStorage : sessionStorage).setItem(TOKEN_KEY, v);
+        return gh("").then(function (r) {
+          if (r.permissions && r.permissions.push === false) throw new Error("This token can read the repo but cannot write to it.");
+          return start();
+        }).then(function () { return "Logged in"; }, function (e) { sessionStorage.removeItem(TOKEN_KEY); localStorage.removeItem(TOKEN_KEY); throw e; });
       });
     }
-    b.onclick = go; p.onkeydown = function (e) { if (e.key === "Enter") go(); };
-    card.appendChild(field("Username", u)); card.appendChild(field("Password", p)); card.appendChild(b);
-    var back = el("a", "muted", "Back to the website"); back.href = "index.html"; back.style.display = "block"; back.style.marginTop = "12px";
-    card.appendChild(back);
-    box.appendChild(card); app.appendChild(box);
+    b.onclick = go; t.onkeydown = function (e) { if (e.key === "Enter") go(); };
+    card.appendChild(field("GitHub token", t)); card.appendChild(remLab); card.appendChild(b);
+    var back = el("a", "muted", "Back to the website"); back.href = "index.html"; back.style.cssText = "display:block;margin-top:12px";
+    card.appendChild(back); box.appendChild(card); app.appendChild(box);
   }
 
-  /* ---------- load current content ---------- */
-  function load() {
-    return getJSON(ORIGIN + "/cms/public/" + enc(REGION) + "/home")
-      .catch(function () { return getJSON(DATA + "/home.json"); })
-      .then(function (p) { H = p || H; MEDIA = Object.assign({}, H.media || {}); });
-  }
-  /* Texts not yet saved in the CMS show the website\u2019s built-in wording, read from index.html. */
+  /* ---------- load + shell ---------- */
   function loadDefaults() {
     return fetch("index.html", { cache: "no-cache" }).then(function (r) { return r.text(); }).then(function (html) {
       var doc = new DOMParser().parseFromString(html, "text/html");
       doc.querySelectorAll("[data-cms]").forEach(function (n) { DEFAULTS[n.getAttribute("data-cms")] = n.textContent.trim(); });
     }).catch(function () {});
   }
-  function start() { return Promise.all([load(), loadDefaults()]).then(render); }
-
-  /* ---------- shell ---------- */
+  function start() {
+    return Promise.all([freshHome(), loadDefaults()]).then(function (r) { HOME = r[0]; render(); });
+  }
   function render() {
     app.replaceChildren();
     var head = el("header"), bar = el("div", "bar");
@@ -171,72 +224,18 @@
     var out = el("button", null, "Log out"); out.onclick = function () { logout("You are logged out."); };
     bar.appendChild(logo); bar.appendChild(el("h1", null, "Website admin")); bar.appendChild(out);
     var tabs = el("div", "tabs");
-    [["home", "Home page"], ["halls", "Film halls"], ["social", "Social links"], ["more", "Other sections"]].forEach(function (t) {
+    [["halls", "Film halls"], ["home", "Home page"], ["social", "Social links"]].forEach(function (t) {
       var b = el("button", tab === t[0] ? "on" : "", t[1]);
       b.onclick = function () { tab = t[0]; render(); };
       tabs.appendChild(b);
     });
     head.appendChild(bar); head.appendChild(tabs);
     var main = el("main");
-    ({ home: homeTab, halls: hallsTab, social: socialTab, more: moreTab })[tab](main);
+    ({ halls: hallsTab, home: homeTab, social: socialTab })[tab](main);
     app.appendChild(head); app.appendChild(main);
   }
 
-  /* ---------- Home page tab ---------- */
-  function homeTab(main) {
-    HOME_FIELDS.forEach(function (f) {
-      var row = H.contents[f.key] || null;
-      var card = el("div", "card");
-      card.appendChild(el("h2", null, f.label));
-      card.appendChild(el("p", "muted", f.key));
-
-      var current = f.author ? plain(row && (row.summary || row.body_json)) : (plain(row && (row.summary || row.title || row.body_json)) || DEFAULTS[f.key] || "");
-      var text = null, author = null, link = null, file = null;
-      if (f.kind === "image") {
-        var prev = thumb(row && row.banner_media_id);
-        file = fileInput(false);
-        var r = el("div", "row"); r.appendChild(prev); r.appendChild(file); card.appendChild(r);
-        if (f.link) {
-          link = input(row && row.meta_json && (row.meta_json.link || row.meta_json.url), "url");
-          card.appendChild(field("Link when the photo is clicked", link));
-        }
-      } else {
-        text = f.kind === "area" ? area(current) : input(current);
-        card.appendChild(text);
-        if (f.author) {
-          author = input(row && (row.title || (row.meta_json && row.meta_json.author)));
-          card.appendChild(field("Author", author));
-        }
-      }
-      var save = el("button", "primary", "Save"); save.style.marginTop = "10px";
-      save.onclick = function () {
-        busy(save, function () {
-          var patch = {}, chain = Promise.resolve();
-          if (text) patch.summary = text.value.trim();
-          if (author) patch.title = author.value.trim();
-          if (link) patch.meta_json = Object.assign({}, row && row.meta_json, { link: link.value.trim() });
-          if (file && file.files[0]) {
-            chain = upload(file.files[0], "photo").then(function (id) { patch.banner_media_id = id; });
-          }
-          return chain.then(function () {
-            var existing = H.contents[f.key];
-            var call = existing
-              ? api(ROUTES.content(existing.id), { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) })
-              : api(ROUTES.contentNew, { method: "POST", headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(Object.assign({ region: REGION, content_key: f.key, title: f.label }, patch)) });
-            return call.then(function (res) {
-              H.contents[f.key] = Object.assign({}, existing || {}, patch, res || {});
-              if (patch.banner_media_id) prev.src = mediaUrl(patch.banner_media_id);
-            });
-          });
-        });
-      };
-      card.appendChild(save);
-      main.appendChild(card);
-    });
-  }
-
-  /* ---------- Film halls tab ---------- */
+  /* ---------- Film halls ---------- */
   function lines(v) { return (Array.isArray(v) ? v : v ? [v] : []).join("\n"); }
   function unlines(s) {
     var a = s.split("\n").map(function (x) { return x.trim(); }).filter(Boolean);
@@ -244,15 +243,11 @@
   }
   function nextHallId() {
     var max = 0;
-    (H.theatres || []).forEach(function (t) {
-      var m = /(\d+)\s*$/.exec(String(t.theatre_id || t.id || ""));
-      if (m) max = Math.max(max, parseInt(m[1], 10));
-    });
+    HOME.theatres.forEach(function (t) { var m = /(\d+)\s*$/.exec(String(t.theatre_id || t.id || "")); if (m) max = Math.max(max, parseInt(m[1], 10)); });
     return "FH-THR-OD-" + String(max + 1).padStart(3, "0");
   }
   function hallsTab(main) {
-    var add = el("button", "primary", "+ Add new film hall");
-    add.style.marginBottom = "14px";
+    var add = el("button", "primary", "+ Add new film hall"); add.style.marginBottom = "14px";
     var slot = el("div");
     add.onclick = function () {
       if (slot.firstChild) { slot.replaceChildren(); return; }
@@ -260,87 +255,77 @@
       card.appendChild(el("h2", null, "New film hall"));
       card.appendChild(el("p", "muted", "Fill the parts below in the same order as the public hall page."));
       card.appendChild(body); slot.appendChild(card);
-      hallForm(body, {}, nextHallId(), true);
+      hallForm(body, null, null);
     };
     main.appendChild(add); main.appendChild(slot);
-    main.appendChild(el("p", "muted", "Or tap Edit on an existing hall to change its page."));
-    (H.theatres || []).forEach(function (t) {
+    HOME.theatres.forEach(function (t) {
       var id = t.theatre_id || t.id;
       var card = el("div", "card"), top = el("div", "row");
-      top.appendChild(thumb(t.photo_media_id));
+      top.appendChild(thumb(mediaPath(t.photo_media_id)));
       var info = el("div"); info.style.flex = "1";
       info.appendChild(el("h2", null, t.name || id));
       info.appendChild(el("p", "muted", [id, t.district].filter(Boolean).join(" · ")));
-      var edit = el("button", null, "Edit"); top.appendChild(info); top.appendChild(edit);
-      card.appendChild(top);
+      var edit = el("button", null, "Edit"), view = el("a", "muted", "View page");
+      view.href = "theatre.html?id=" + enc(id); view.target = "_blank"; view.rel = "noopener";
+      top.appendChild(info); top.appendChild(view); top.appendChild(edit); card.appendChild(top);
       var body = el("div"); body.hidden = true; card.appendChild(body);
       edit.onclick = function () {
         body.hidden = !body.hidden;
-        if (!body.hidden && !body.firstChild) hallForm(body, t, id, false);
+        if (body.hidden || body.firstChild) return;
+        body.appendChild(el("p", "muted", "Loading…"));
+        readText(DATA + "/theatre/" + enc(id) + ".json").then(function (txt) {
+          body.replaceChildren();
+          var hj = null; try { hj = txt ? JSON.parse(txt) : null; } catch (e) { hj = null; }
+          hallForm(body, t, hj);
+        }).catch(function (e) { body.replaceChildren(); toast(e.message, true); });
       };
       main.appendChild(card);
     });
-    if (!(H.theatres || []).length) main.appendChild(el("p", "muted", "No film halls published yet."));
+    if (!HOME.theatres.length) main.appendChild(el("p", "muted", "No film halls yet."));
   }
-  function part(body, title, hint) {
-    var p = el("div");
-    p.style.cssText = "border-top:1px solid var(--line);margin-top:18px;padding-top:6px";
-    var h = el("h3", null, title); h.style.cssText = "margin:8px 0 2px;font-size:16px";
-    p.appendChild(h);
-    if (hint) p.appendChild(el("p", "muted", hint));
-    body.appendChild(p); return p;
-  }
-  function picker(currentId) {
-    var wrap = el("div", "row"), prev = thumb(currentId), inp = fileInput(false);
-    prev.style.width = "140px"; prev.style.height = "100px";
-    inp.onchange = function () { if (inp.files[0]) prev.src = URL.createObjectURL(inp.files[0]); };
-    wrap.appendChild(prev); wrap.appendChild(inp);
-    return { node: wrap, input: inp };
-  }
-  var JSON_H = { "Content-Type": "application/json" };
 
-  /* The form follows the public hall page, top to bottom:
-     photo, details, Book ticket, film poster, gallery, Join with us. */
-  function hallForm(body, t, id, isNew) {
-    var meta = Object.assign({}, t.meta_json), soc = Object.assign({}, t.social_json || {});
+  /* The form follows the public hall page: photo, details, Book ticket, poster, gallery (4 max), Join with us. */
+  function hallForm(body, row, hj) {
+    var isNew = !row, r = row || {};
+    var meta = Object.assign({}, r.meta_json), soc = Object.assign({}, r.social_json || {});
+    var hallMedia = (hj && hj.media) || {};
     var p;
 
     p = part(body, "Theatre photo", "The big photo at the top of the hall page.");
-    var photo = picker(t.photo_media_id); p.appendChild(photo.node);
+    var photo = picker(mediaPath(r.photo_media_id, hallMedia), 600); p.appendChild(photo.node);
 
     p = part(body, "Hall details");
-    var idIn = isNew ? input(id) : null;
-    var name = input(t.name), owner = input(t.owner_name), dist = input(t.district), addr = input(t.address);
+    var idIn = isNew ? input(nextHallId()) : null;
+    var name = input(r.name), owner = input(r.owner_name), dist = input(r.district), addr = input(r.address);
     if (idIn) p.appendChild(field("Hall ID (filled in automatically)", idIn));
     p.appendChild(field("Film hall name", name)); p.appendChild(field("Owner name", owner));
     p.appendChild(field("District", dist)); p.appendChild(field("Address", addr));
 
     p = part(body, "Book ticket", "Numbers for the Call and WhatsApp buttons.");
-    var phone = input(plain(meta.phone)), wa = input(plain(meta.whatsapp)), tick = input(t.ticket_generator_url, "url");
+    var phone = input(plain(meta.phone)), wa = input(plain(meta.whatsapp)), tick = input(r.ticket_generator_url, "url");
     p.appendChild(field("Call number", phone)); p.appendChild(field("WhatsApp number", wa));
     p.appendChild(field("Online ticket link (optional)", tick));
 
-    p = part(body, "Film poster", "The film showing now.");
-    var film = input(t.current_film_title), poster = picker(t.current_film_media_id);
+    p = part(body, "Film poster", "Use a tall poster, at least 800 px wide. It is saved sharp (up to 1800 px) and is never cropped.");
+    var film = input(r.current_film_title), poster = picker(mediaPath(r.current_film_media_id, hallMedia), 800);
     p.appendChild(field("Film name", film)); p.appendChild(poster.node);
 
-    p = part(body, "Gallery", isNew ? "Pick several photos at once. You can add more later." : "Add more photos.");
-    var gallery = fileInput(true), gal = el("div", "gal");
-    p.appendChild(gallery); p.appendChild(gal);
-    if (!isNew) {
-      getJSON(ORIGIN + "/cms/public/" + enc(REGION) + "/theatres/" + enc(id))
-        .catch(function () { return getJSON(DATA + "/theatre/" + enc(id) + ".json"); })
-        .then(function (d) { ((d && d.gallery && d.gallery.items) || []).forEach(function (g) { gal.appendChild(thumb(g.id)); }); })
-        .catch(function () {});
-    }
-    gallery.onchange = function () {
-      gal.querySelectorAll("[data-new]").forEach(function (n) { n.remove(); });
-      Array.prototype.slice.call(gallery.files).forEach(function (f) {
-        var im = el("img", "thumb"); im.alt = ""; im.src = URL.createObjectURL(f); im.setAttribute("data-new", "1"); gal.appendChild(im);
-      });
-    };
+    p = part(body, "Gallery", "Up to " + MAX_GALLERY + " photos. Replace or remove any of them whenever you like.");
+    var items = (hj && hj.gallery && hj.gallery.items) || [];
+    var slots = [];
+    for (var i = 0; i < MAX_GALLERY; i++) (function (i) {
+      var s = { id: items[i] ? items[i].id : null, file: null, removed: false };
+      slots.push(s);
+      var row2 = el("div", "row"); row2.style.marginTop = "8px";
+      var prev = thumb(s.id ? mediaPath(s.id, hallMedia) : "", 96, 72), inp = fileInput();
+      var rm = el("button", "danger", "Remove");
+      inp.onchange = function () { if (inp.files[0]) { s.file = inp.files[0]; s.removed = false; prev.src = URL.createObjectURL(inp.files[0]); } };
+      rm.onclick = function () { s.file = null; s.removed = true; inp.value = ""; prev.removeAttribute("src"); };
+      row2.appendChild(el("b", null, "Photo " + (i + 1))); row2.appendChild(prev); row2.appendChild(inp); row2.appendChild(rm);
+      p.appendChild(row2);
+    })(i);
 
-    p = part(body, "Join with us", "Facebook, YouTube and Instagram buttons. One link per line; the first one is used for the button.");
+    p = part(body, "Join with us", "Facebook, YouTube and Instagram buttons. If you add more than one link, the first one is used.");
     var s = { facebook: area(lines(soc.facebook || meta.facebook)), youtube: area(lines(soc.youtube || meta.youtube)), instagram: area(lines(soc.instagram || meta.instagram)) };
     Object.keys(s).forEach(function (k) { s[k].style.minHeight = "48px"; });
     p.appendChild(field("Facebook (F)", s.facebook)); p.appendChild(field("YouTube (Y)", s.youtube)); p.appendChild(field("Instagram (I)", s.instagram));
@@ -348,56 +333,141 @@
     var save = el("button", "primary", isNew ? "Create film hall" : "Save this hall"); save.style.marginTop = "18px";
     save.onclick = function () {
       busy(save, function () {
-        var hid = idIn ? idIn.value.trim() : id;
-        var m2 = Object.assign({}, meta), s2 = Object.assign({}, soc);
-        [["phone", phone.value], ["whatsapp", wa.value]].forEach(function (q) { if (q[1].trim()) m2[q[0]] = q[1].trim(); else delete m2[q[0]]; });
-        ["facebook", "instagram", "youtube"].forEach(function (k) { var v = unlines(s[k].value); if (v) s2[k] = v; else delete s2[k]; delete m2[k]; });
-        var data = { name: name.value.trim(), owner_name: owner.value.trim(), district: dist.value.trim(), address: addr.value.trim(),
-                     current_film_title: film.value.trim() || null, ticket_generator_url: tick.value.trim() || null,
-                     meta_json: m2, social_json: s2 };
-        var patch = {};
-        var chain = Promise.resolve().then(function () {
-          if (!isNew) return;
-          if (!/^[A-Za-z0-9_-]{3,40}$/.test(hid)) throw new Error("Hall ID can use letters, numbers, - and _ only.");
-          if (!data.name) throw new Error("Please enter the film hall name.");
-          return api(ROUTES.theatreNew, { method: "POST", headers: JSON_H,
-            body: JSON.stringify(Object.assign({ theatre_id: hid, region: REGION, status: "active" }, data)) });
+        var tid = idIn ? idIn.value.trim() : r.theatre_id;
+        if (isNew) {
+          if (!/^[A-Za-z0-9_-]{3,40}$/.test(tid)) throw new Error("Hall ID can use letters, numbers, - and _ only.");
+          if (HOME.theatres.some(function (t) { return (t.theatre_id || t.id) === tid; })) throw new Error("A hall with this ID already exists.");
+        }
+        if (!name.value.trim()) throw new Error("Please enter the film hall name.");
+
+        var stamp = Date.now(), dir = "media/theatres/" + tid + "/", files = [], deletes = [], media = {}, upd = {};
+        function addImage(file, nameBase, max, q, role) {
+          return prep(file, max, q, false).then(function (img) {
+            var id = "adm_" + tid + "_" + role, path = dir + nameBase + "." + img.ext;
+            files.push({ path: path, b64: img.b64 }); media[id] = path + "?v=" + stamp; return id;
+          });
+        }
+        var jobs = [];
+        if (photo.input.files[0]) jobs.push(addImage(photo.input.files[0], "photo", 1600, 0.9, "photo").then(function (id) { upd.photo_media_id = id; }));
+        if (poster.input.files[0]) jobs.push(addImage(poster.input.files[0], "poster", 1800, 0.93, "poster").then(function (id) { upd.current_film_media_id = id; }));
+        slots.forEach(function (s, i) {
+          if (s.file) jobs.push(addImage(s.file, "gallery-" + (i + 1), 1400, 0.88, "g" + (i + 1)).then(function (id) { s.newId = id; }));
+          else if (s.removed && s.id) { var old = stripQ(mediaPath(s.id, hallMedia)); if (old.indexOf(dir) === 0) deletes.push(old); }
         });
-        if (photo.input.files[0]) chain = chain.then(function () { return upload(photo.input.files[0], "photo", hid).then(function (m) { patch.photo_media_id = m; }); });
-        if (poster.input.files[0]) chain = chain.then(function () { return upload(poster.input.files[0], "photo", hid).then(function (m) { patch.current_film_media_id = m; }); });
-        Array.prototype.slice.call(gallery.files).forEach(function (f) { chain = chain.then(function () { return upload(f, "photo", hid); }); });
-        return chain.then(function () {
-          if (!isNew) Object.assign(patch, data);
-          if (!Object.keys(patch).length) return;
-          return api(ROUTES.theatre(hid), { method: "PATCH", headers: JSON_H, body: JSON.stringify(patch) });
-        }).then(function () {
-          if (isNew) { H.theatres.push(Object.assign({ theatre_id: hid, id: hid, region: REGION, status: "active" }, data, patch)); render(); }
-          else Object.assign(t, data, patch);
+
+        return Promise.all(jobs).then(function () {
+          var m2 = Object.assign({}, meta), s2 = Object.assign({}, soc);
+          [["phone", phone.value], ["whatsapp", wa.value]].forEach(function (q) { if (q[1].trim()) m2[q[0]] = q[1].trim(); else delete m2[q[0]]; });
+          ["facebook", "instagram", "youtube"].forEach(function (k) { var v = unlines(s[k].value); if (v) s2[k] = v; else delete s2[k]; delete m2[k]; });
+          var now = new Date().toISOString();
+          var base = isNew ? { theatre_id: tid, id: tid, region: REGION, status: "active", photo_media_id: null, current_film_media_id: null,
+                               record_status: "published", published_at: now, created_at: now, rev: 0, prices_json: [], payment_qr_media_id: null, owner_user_id: null }
+                           : r;
+          var rowOut = Object.assign({}, base, upd, {
+            name: name.value.trim(), owner_name: owner.value.trim(), district: dist.value.trim(), address: addr.value.trim(),
+            current_film_title: film.value.trim() || null, ticket_generator_url: tick.value.trim() || null,
+            meta_json: m2, social_json: s2, updated_at: now, rev: (base.rev || 0) + 1
+          });
+          var gal = [];
+          slots.forEach(function (s) { var id = s.newId || (!s.removed && s.id); if (id) gal.push({ id: id, alt_text: rowOut.name + " photo" }); });
+          var hallMediaOut = {};
+          [rowOut.photo_media_id, rowOut.current_film_media_id].concat(gal.map(function (g) { return g.id; })).forEach(function (id) {
+            if (id) hallMediaOut[id] = media[id] || mediaPath(id, hallMedia);
+          });
+          var hallJson = Object.assign({}, rowOut, { gallery: { items: gal }, media: hallMediaOut });
+          files.push({ path: DATA + "/theatre/" + tid + ".json", text: JSON.stringify(hallJson, null, 2) + "\n" });
+
+          return freshHome().then(function (H) {
+            Object.assign(H.media, media);
+            [rowOut.photo_media_id, rowOut.current_film_media_id].forEach(function (id) { if (id && !H.media[id] && hallMediaOut[id]) H.media[id] = hallMediaOut[id]; });
+            var at = -1; H.theatres.forEach(function (t, i) { if ((t.theatre_id || t.id) === tid) at = i; });
+            if (at >= 0) H.theatres[at] = rowOut; else H.theatres.push(rowOut);
+            files.push(homeFile(H));
+            return commit(files, deletes, "Admin: " + (isNew ? "add" : "update") + " hall " + tid).then(function () { HOME = H; render(); });
+          });
         });
       });
     };
     body.appendChild(save);
   }
 
-  /* ---------- Social links tab ---------- */
-  function socialTab(main) {
-    main.appendChild(el("p", "muted", "The Follow Us buttons at the bottom of the home page."));
-    var list = (H.links || []).slice();
-    list.push({ _new: true, title: "", url: "" });
-    list.forEach(function (l) {
+  /* ---------- Home page texts, logo and banner ---------- */
+  function homeTab(main) {
+    main.appendChild(el("p", "muted", "Boxes start with the wording the website shows now. Clear a box and save to go back to the built-in wording."));
+    HOME_FIELDS.forEach(function (f) {
+      var row = HOME.contents[f.key] || null;
       var card = el("div", "card");
-      var title = input(l.title), url = input(l.url, "url");
+      card.appendChild(el("h2", null, f.label)); card.appendChild(el("p", "muted", f.key));
+      var current = f.author ? plain(row && (row.summary || row.body_json))
+                             : (plain(row && (row.summary || row.title || row.body_json)) || DEFAULTS[f.key] || "");
+      var text = null, author = null, link = null, pick = null;
+      if (f.kind === "image") {
+        pick = picker(row && row.banner_media_id ? mediaPath(row.banner_media_id) : "", f.png ? 0 : 1000);
+        card.appendChild(pick.node);
+        if (f.link) { link = input(row && row.meta_json && (row.meta_json.link || row.meta_json.url), "url"); card.appendChild(field("Link when the photo is clicked", link)); }
+      } else {
+        text = f.kind === "area" ? area(current) : input(current); card.appendChild(text);
+        if (f.author) { author = input(row && (row.title || (row.meta_json && row.meta_json.author))); card.appendChild(field("Author", author)); }
+      }
+      var save = el("button", "primary", "Save"); save.style.marginTop = "10px";
+      save.onclick = function () {
+        busy(save, function () {
+          var files = [], media = {}, stamp = Date.now();
+          var job = Promise.resolve(null);
+          if (pick && pick.input.files[0]) {
+            job = prep(pick.input.files[0], f.png ? 1200 : 1800, 0.92, !!f.png).then(function (img) {
+              var id = "adm_" + f.key.replace(/\./g, "_"), path = "media/site/" + f.key.replace(/\./g, "-") + "." + img.ext;
+              files.push({ path: path, b64: img.b64 }); media[id] = path + "?v=" + stamp; return id;
+            });
+          }
+          return job.then(function (newMedia) {
+            return freshHome().then(function (H) {
+              var cur = H.contents[f.key] || null, now = new Date().toISOString();
+              var out = Object.assign({ id: "cnt_adm_" + f.key.replace(/\./g, "_"), region: REGION, content_key: f.key, title: f.label, summary: null,
+                                        body_json: null, banner_media_id: null, record_status: "published", published_at: now, created_at: now,
+                                        owner_theatre_id: null, rev: 0, meta_json: null }, cur || {});
+              if (text) {
+                var v = text.value.trim();
+                if (!v && !f.author) { delete H.contents[f.key]; out = null; }
+                else { out.summary = v || null; out.title = f.author ? (author.value.trim() || out.title) : v; }
+              }
+              if (out) {
+                if (newMedia) out.banner_media_id = newMedia;
+                if (link) out.meta_json = Object.assign({}, out.meta_json, { link: link.value.trim() });
+                out.updated_at = now; out.rev = (out.rev || 0) + 1; H.contents[f.key] = out;
+              }
+              Object.assign(H.media, media);
+              files.push(homeFile(H));
+              return commit(files, [], "Admin: update " + f.key).then(function () { HOME = H; render(); });
+            });
+          });
+        });
+      };
+      card.appendChild(save); main.appendChild(card);
+    });
+  }
+
+  /* ---------- Social links (Follow Us buttons on the home page) ---------- */
+  function socialTab(main) {
+    main.appendChild(el("p", "muted", "The Follow Us buttons on the home page. Once you add any link here, these replace the built-in buttons, so add all that you want to show."));
+    var list = HOME.links.slice(); list.push({ _new: true, title: "", url: "" });
+    list.forEach(function (l) {
+      var card = el("div", "card"), title = input(l.title), url = input(l.url, "url");
       card.appendChild(el("h2", null, l._new ? "Add a link" : l.title || "Link"));
       card.appendChild(field("Button name (Facebook, YouTube, Instagram…)", title)); card.appendChild(field("Link", url));
       var row = el("div", "row"); row.style.marginTop = "10px";
+      function change(mutate, msg) {
+        return freshHome().then(function (H) { mutate(H); return commit([homeFile(H)], [], msg).then(function () { HOME = H; render(); }); });
+      }
       var save = el("button", "primary", l._new ? "Add" : "Save");
       save.onclick = function () {
         busy(save, function () {
-          var patch = { title: title.value.trim(), url: url.value.trim() };
-          var call = l._new
-            ? api(ROUTES.linkNew, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.assign({ region: REGION }, patch)) })
-            : api(ROUTES.link(l.id), { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) });
-          return call.then(function (res) { if (l._new) { H.links.push(Object.assign({}, patch, res || {})); render(); } else Object.assign(l, patch); });
+          var t = title.value.trim(), u = url.value.trim();
+          if (!t || !u) throw new Error("Please fill in the button name and the link.");
+          return change(function (H) {
+            if (l._new) H.links.push({ id: "lnk_adm_" + Date.now(), region: REGION, title: t, url: u, sort_order: H.links.length + 1 });
+            else H.links.forEach(function (x) { if (x.id === l.id) { x.title = t; x.url = u; } });
+          }, "Admin: social link " + t);
         });
       };
       row.appendChild(save);
@@ -405,7 +475,7 @@
         var del = el("button", "danger", "Delete");
         del.onclick = function () {
           if (!confirm("Delete this link?")) return;
-          busy(del, function () { return api(ROUTES.link(l.id), { method: "DELETE" }).then(function () { H.links = H.links.filter(function (x) { return x !== l; }); render(); }); });
+          busy(del, function () { return change(function (H) { H.links = H.links.filter(function (x) { return x.id !== l.id; }); }, "Admin: delete social link"); });
         };
         row.appendChild(del);
       }
@@ -413,24 +483,6 @@
     });
   }
 
-  /* ---------- Other sections (view only for now) ---------- */
-  function moreTab(main) {
-    var cats = {};
-    (H.categories || []).forEach(function (c) { cats[c.id] = c.label; });
-    var groups = [
-      ["Community categories", H.categories, function (c) { return c.label; }],
-      ["Community members", H.community, function (m) { return [m.name, cats[m.category_id]].filter(Boolean).join(" · "); }],
-      ["Activities", H.activities, function (a) { return a.title; }],
-      ["Documents", H.documents, function (d) { return d.title; }]
-    ];
-    main.appendChild(el("p", "muted", "These sections are shown here as they are published. Editing them needs their save routes added to admin.js."));
-    groups.forEach(function (g) {
-      var card = el("div", "card"); card.appendChild(el("h2", null, g[0] + " (" + (g[1] || []).length + ")"));
-      (g[1] || []).forEach(function (r) { card.appendChild(el("p", "muted", g[2](r) || "(no name)")); });
-      main.appendChild(card);
-    });
-  }
-
-  if (sessionStorage.getItem(TOKEN_KEY)) start().catch(function () { showLogin(); });
+  if (token()) start().catch(function (e) { showLogin(e.message === "Token rejected" ? "" : e.message); });
   else showLogin();
 })();
