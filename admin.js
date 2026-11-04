@@ -223,7 +223,7 @@
             var call = existing
               ? api(ROUTES.content(existing.id), { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) })
               : api(ROUTES.contentNew, { method: "POST", headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(Object.assign({ region: REGION, content_key: f.key, title: f.label, record_status: "published" }, patch)) });
+                  body: JSON.stringify(Object.assign({ region: REGION, content_key: f.key, title: f.label }, patch)) });
             return call.then(function (res) {
               H.contents[f.key] = Object.assign({}, existing || {}, patch, res || {});
               if (patch.banner_media_id) prev.src = mediaUrl(patch.banner_media_id);
@@ -361,7 +361,7 @@
           if (!/^[A-Za-z0-9_-]{3,40}$/.test(hid)) throw new Error("Hall ID can use letters, numbers, - and _ only.");
           if (!data.name) throw new Error("Please enter the film hall name.");
           return api(ROUTES.theatreNew, { method: "POST", headers: JSON_H,
-            body: JSON.stringify(Object.assign({ theatre_id: hid, region: REGION, status: "active", record_status: "published" }, data)) });
+            body: JSON.stringify(Object.assign({ theatre_id: hid, region: REGION, status: "active" }, data)) });
         });
         if (photo.input.files[0]) chain = chain.then(function () { return upload(photo.input.files[0], "photo", hid).then(function (m) { patch.photo_media_id = m; }); });
         if (poster.input.files[0]) chain = chain.then(function () { return upload(poster.input.files[0], "photo", hid).then(function (m) { patch.current_film_media_id = m; }); });
@@ -395,7 +395,7 @@
         busy(save, function () {
           var patch = { title: title.value.trim(), url: url.value.trim() };
           var call = l._new
-            ? api(ROUTES.linkNew, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.assign({ region: REGION, record_status: "published" }, patch)) })
+            ? api(ROUTES.linkNew, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.assign({ region: REGION }, patch)) })
             : api(ROUTES.link(l.id), { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) });
           return call.then(function (res) { if (l._new) { H.links.push(Object.assign({}, patch, res || {})); render(); } else Object.assign(l, patch); });
         });
