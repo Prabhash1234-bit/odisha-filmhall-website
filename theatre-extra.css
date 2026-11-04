@@ -1,0 +1,8 @@
+/* New theatre page sections: Book ticket, film poster, Join with us */
+.book-section, .poster-section, .join-section { text-align: center; margin: 24px auto; max-width: 720px; padding: 0 16px; }
+.book-section .theatre-actions { justify-content: center; flex-wrap: wrap; }
+.film-poster { display: block; margin: 0 auto; width: min(320px, 80%); height: auto; border-radius: 10px; }
+.poster-title { margin: 10px 0 0; font-weight: 600; }
+.join-row { display: flex; gap: 12px; justify-content: center; }
+.join-btn { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 12px; background: var(--fh-lotus); color: var(--fh-white); font-weight: 700; font-size: 20px; text-decoration: none; }
+.join-btn:hover { background: var(--fh-lotus-deep); }
