@@ -90,7 +90,7 @@
         return r.text().then(function (b) {
           var d = null; try { d = b ? JSON.parse(b) : null; } catch (e) { d = null; }
           if (!r.ok) {
-            if (r.status === 403 || r.status === 404) throw new Error("GitHub refused this (" + r.status + "). Check that the token has Contents: Read and write for this repo.");
+            if (r.status === 403 || r.status === 404) throw new Error("GitHub says (" + r.status + "): " + ((d && d.message) || "refused") + " — the token needs Contents: Read and write on this repo.");
             if (r.status === 422) throw new Error("GitHub changed while saving. Reload the page and try again.");
             throw new Error((d && d.message) || "GitHub error " + r.status);
           }
