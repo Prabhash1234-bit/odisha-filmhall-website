@@ -20,7 +20,7 @@
 
   var FH = window.FilmHall;
   var page = null;
-  var GALLERY_CAP = 12;
+  var GALLERY_CAP = 4;
 
   function statusChip(status) {
     var value = String(status || "").toLowerCase();
@@ -273,7 +273,11 @@
     var img = FH.el("img", "film-poster");
     img.alt = theatre.current_film_title || "Film poster";
     FH.assignImage(img, theatre.current_film_media_id, "logo.png");
-    section.appendChild(img);
+    var full = document.createElement("a");
+    full.href = FH.mediaUrl(theatre.current_film_media_id);
+    full.target = "_blank"; full.rel = "noopener noreferrer"; full.title = "Open the full poster";
+    full.appendChild(img);
+    section.appendChild(full);
     if (theatre.current_film_title) section.appendChild(FH.el("p", "poster-title", theatre.current_film_title));
     page.appendChild(section);
   }
@@ -329,7 +333,9 @@
     var odishaLogoId = null;
     var filmhallLogoId = null;
 
+    var homePayload = null;
     var home = FH.getJSON(FH.base + "/home.json").then(function (payload) {
+      homePayload = payload;
       FH.setMedia(payload && payload.media);
       var contents = (payload && payload.contents) || {};
       var logoRow = contents["site.logo"];
@@ -347,6 +353,15 @@
     ).then(function (payload) {
       FH.setMedia(payload && payload.media);
       return payload;
+    }).catch(function () {
+      /* No separate file for this hall yet: use its row from home.json. */
+      return home.then(function () {
+        var rows = (homePayload && homePayload.theatres) || [];
+        for (var i = 0; i < rows.length; i++) {
+          if ((rows[i].theatre_id || rows[i].id) === id) return rows[i];
+        }
+        throw new Error("not found");
+      });
     });
 
     Promise.all([home, regions, theatre]).then(function (result) {
