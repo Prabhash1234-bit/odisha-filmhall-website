@@ -1,0 +1,59 @@
+{
+  "theatre_id": "FH-THR-OD-RG-002",
+  "id": "FH-THR-OD-RG-002",
+  "region": "odisha",
+  "status": "active",
+  "photo_media_id": "adm_FH-THR-OD-RG-002_photo",
+  "current_film_media_id": "adm_FH-THR-OD-RG-002_poster",
+  "record_status": "published",
+  "published_at": "2026-11-05T03:07:16.300Z",
+  "created_at": "2026-11-05T03:07:16.300Z",
+  "rev": 1,
+  "prices_json": [],
+  "payment_qr_media_id": null,
+  "owner_user_id": null,
+  "name": "MAA MAJHIGHARIANI FILMHALL",
+  "owner_name": "R********  ******",
+  "district": "RAYAGADA",
+  "address": "NEAR STATION",
+  "current_film_title": "PAABAAR",
+  "ticket_generator_url": null,
+  "meta_json": {
+    "phone": "9556979654",
+    "whatsapp": "7326097670"
+  },
+  "social_json": {
+    "facebook": "https://www.facebook.com/share/19pEFLrZ7z/",
+    "instagram": "https://www.instagram.com/filmhallofficial?psln=YmVpM25uOW5sN3d6",
+    "youtube": "https://youtube.com/watch?v=tdlnMF5Q7wQ&si=WtRazm7mLIJIwaAB"
+  },
+  "updated_at": "2026-11-05T03:07:16.300Z",
+  "gallery": {
+    "items": [
+      {
+        "id": "adm_FH-THR-OD-RG-002_g1",
+        "alt_text": "MAA MAJHIGHARIANI FILMHALL photo"
+      },
+      {
+        "id": "adm_FH-THR-OD-RG-002_g2",
+        "alt_text": "MAA MAJHIGHARIANI FILMHALL photo"
+      },
+      {
+        "id": "adm_FH-THR-OD-RG-002_g3",
+        "alt_text": "MAA MAJHIGHARIANI FILMHALL photo"
+      },
+      {
+        "id": "adm_FH-THR-OD-RG-002_g4",
+        "alt_text": "MAA MAJHIGHARIANI FILMHALL photo"
+      }
+    ]
+  },
+  "media": {
+    "adm_FH-THR-OD-RG-002_photo": "media/theatres/FH-THR-OD-RG-002/photo.jpg?v=1793848035098",
+    "adm_FH-THR-OD-RG-002_poster": "media/theatres/FH-THR-OD-RG-002/poster.jpg?v=1793848035098",
+    "adm_FH-THR-OD-RG-002_g1": "media/theatres/FH-THR-OD-RG-002/gallery-1.jpg?v=1793848035098",
+    "adm_FH-THR-OD-RG-002_g2": "media/theatres/FH-THR-OD-RG-002/gallery-2.jpg?v=1793848035098",
+    "adm_FH-THR-OD-RG-002_g3": "media/theatres/FH-THR-OD-RG-002/gallery-3.jpg?v=1793848035098",
+    "adm_FH-THR-OD-RG-002_g4": "media/theatres/FH-THR-OD-RG-002/gallery-4.jpg?v=1793848035098"
+  }
+}
