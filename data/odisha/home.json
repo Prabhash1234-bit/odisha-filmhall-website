@@ -34,6 +34,45 @@
   "community": [],
   "documents": [],
   "links": [],
-  "theatres": [],
-  "media": {}
+  "theatres": [
+    {
+      "theatre_id": "FH-THR-OD-CTC-001",
+      "id": "FH-THR-OD-CTC-001",
+      "region": "odisha",
+      "status": "active",
+      "photo_media_id": "adm_FH-THR-OD-CTC-001_photo",
+      "current_film_media_id": "adm_FH-THR-OD-CTC-001_poster",
+      "record_status": "published",
+      "published_at": "2026-11-05T02:51:46.937Z",
+      "created_at": "2026-11-05T02:51:46.937Z",
+      "rev": 1,
+      "prices_json": [],
+      "payment_qr_media_id": null,
+      "owner_user_id": null,
+      "name": "CHANDI-KATAK-FILMHALL",
+      "owner_name": "PRABHASH",
+      "district": "KATAK",
+      "address": "TRISULIA",
+      "current_film_title": "THE OUTLAW [2017]",
+      "ticket_generator_url": null,
+      "meta_json": {
+        "phone": "7326097670",
+        "whatsapp": "7326097670"
+      },
+      "social_json": {
+        "facebook": "https://www.facebook.com/share/19pEFLrZ7z/",
+        "instagram": "https://www.instagram.com/filmhallofficial?psln=YmVpM25uOW5sN3d6",
+        "youtube": "https://youtube.com/watch?v=tdlnMF5Q7wQ&si=WtRazm7mLIJIwaAB"
+      },
+      "updated_at": "2026-11-05T02:51:46.937Z"
+    }
+  ],
+  "media": {
+    "adm_FH-THR-OD-CTC-001_photo": "media/theatres/FH-THR-OD-CTC-001/photo.jpg?v=1793847105452",
+    "adm_FH-THR-OD-CTC-001_poster": "media/theatres/FH-THR-OD-CTC-001/poster.jpg?v=1793847105452",
+    "adm_FH-THR-OD-CTC-001_g3": "media/theatres/FH-THR-OD-CTC-001/gallery-3.jpg?v=1793847105452",
+    "adm_FH-THR-OD-CTC-001_g4": "media/theatres/FH-THR-OD-CTC-001/gallery-4.jpg?v=1793847105452",
+    "adm_FH-THR-OD-CTC-001_g1": "media/theatres/FH-THR-OD-CTC-001/gallery-1.jpg?v=1793847105452",
+    "adm_FH-THR-OD-CTC-001_g2": "media/theatres/FH-THR-OD-CTC-001/gallery-2.jpg?v=1793847105452"
+  }
 }
