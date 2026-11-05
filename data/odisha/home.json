@@ -27,6 +27,22 @@
       "rev": 1,
       "meta_json": null,
       "updated_at": "2026-11-05T02:45:29.438Z"
+    },
+    "site.intro": {
+      "id": "cnt_adm_site_intro",
+      "region": "odisha",
+      "content_key": "site.intro",
+      "title": "ମନୋରଞ୍ଜନ ହେଉଛି ସମସ୍ତଙ୍କ ଅଧିକାର । ଏହା ସମସ୍ତଙ୍କ ପାଖରେ ପହଞ୍ଚିବା ଦରକାର ।\n     Entertainment is everyone's right. It should reach everyone.",
+      "summary": "ମନୋରଞ୍ଜନ ହେଉଛି ସମସ୍ତଙ୍କ ଅଧିକାର । ଏହା ସମସ୍ତଙ୍କ ପାଖରେ ପହଞ୍ଚିବା ଦରକାର ।\n     Entertainment is everyone's right. It should reach everyone.",
+      "body_json": null,
+      "banner_media_id": null,
+      "record_status": "published",
+      "published_at": "2026-11-05T03:12:17.002Z",
+      "created_at": "2026-11-05T03:12:17.002Z",
+      "owner_theatre_id": null,
+      "rev": 1,
+      "meta_json": null,
+      "updated_at": "2026-11-05T03:12:17.002Z"
     }
   },
   "activities": [],
