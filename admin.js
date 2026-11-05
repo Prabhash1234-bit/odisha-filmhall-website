@@ -9,6 +9,10 @@
   var REGION = "odisha", DATA = "data/odisha";
   var API = "https://api.github.com/repos/" + OWNER + "/" + REPO;
   var TOKEN_KEY = "fh_gh_token", MAX_GALLERY = 4;
+  /* Address of the owner service (Cloudflare Worker). Paste it here after you deploy it,
+     for example "https://filmhall-owners.yourname.workers.dev" */
+  var OWNER_API = "";
+  var ADMIN_KEY_STORE = "fh_owner_admin_key";
   var enc = encodeURIComponent;
 
   var HOME_FIELDS = [
@@ -224,14 +228,14 @@
     var out = el("button", null, "Log out"); out.onclick = function () { logout("You are logged out."); };
     bar.appendChild(logo); bar.appendChild(el("h1", null, "Website admin")); bar.appendChild(out);
     var tabs = el("div", "tabs");
-    [["halls", "Film halls"], ["home", "Home page"], ["social", "Social links"]].forEach(function (t) {
+    [["halls", "Film halls"], ["home", "Home page"], ["social", "Social links"], ["owners", "Hall owners"]].forEach(function (t) {
       var b = el("button", tab === t[0] ? "on" : "", t[1]);
       b.onclick = function () { tab = t[0]; render(); };
       tabs.appendChild(b);
     });
     head.appendChild(bar); head.appendChild(tabs);
     var main = el("main");
-    ({ halls: hallsTab, home: homeTab, social: socialTab })[tab](main);
+    ({ halls: hallsTab, home: homeTab, social: socialTab, owners: ownersTab })[tab](main);
     app.appendChild(head); app.appendChild(main);
   }
 
@@ -481,6 +485,118 @@
       }
       card.appendChild(row); main.appendChild(card);
     });
+  }
+
+
+  /* ---------- Hall owners (logins for the owner app) ---------- */
+  function oapi(path, method, body) {
+    return fetch(OWNER_API.replace(/\/+$/, "") + path, {
+      method: method || "GET",
+      headers: Object.assign({ "X-Admin-Key": sessionStorage.getItem(ADMIN_KEY_STORE) || "" }, body ? { "Content-Type": "application/json" } : {}),
+      body: body ? JSON.stringify(body) : undefined
+    }).catch(function () { throw new Error("Cannot reach the owner service. Check the address in OWNER_API."); })
+      .then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (d) {
+          if (r.status === 401) sessionStorage.removeItem(ADMIN_KEY_STORE);
+          if (!r.ok) throw new Error(d.error || "Error " + r.status);
+          return d;
+        });
+      });
+  }
+  function randomPassword() {
+    var chars = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789", a = new Uint32Array(10), out = "";
+    crypto.getRandomValues(a);
+    for (var i = 0; i < a.length; i++) out += chars[a[i] % chars.length];
+    return out;
+  }
+  function showCreds(box, username, password) {
+    box.replaceChildren();
+    var c = el("div", "card"); c.style.borderColor = "var(--accent)";
+    c.appendChild(el("h2", null, "Give this login to the owner"));
+    c.appendChild(el("p", "muted", "The password is shown only now. Copy it before you leave this page."));
+    var t = el("p", null, "Username: " + username + "\nPassword: " + password); t.style.cssText = "white-space:pre;font-family:monospace;font-size:17px;margin:8px 0";
+    var cp = el("button", "primary", "Copy");
+    cp.onclick = function () {
+      (navigator.clipboard ? navigator.clipboard.writeText("Username: " + username + "\nPassword: " + password) : Promise.reject())
+        .then(function () { toast("Copied"); }, function () { toast("Copy it by hand from the screen.", true); });
+    };
+    c.appendChild(t); c.appendChild(cp); box.appendChild(c);
+  }
+  function hallName(id) {
+    var n = id; HOME.theatres.forEach(function (t) { if ((t.theatre_id || t.id) === id) n = t.name || id; });
+    return n;
+  }
+  function ownersTab(main) {
+    var card = el("div", "card");
+    if (!OWNER_API) {
+      card.appendChild(el("h2", null, "Hall owners"));
+      card.appendChild(el("p", "muted", "Not set up yet. After you deploy the owner service, paste its address into OWNER_API at the top of admin.js."));
+      main.appendChild(card); return;
+    }
+    if (!sessionStorage.getItem(ADMIN_KEY_STORE)) {
+      card.appendChild(el("h2", null, "Owner admin key"));
+      card.appendChild(el("p", "muted", "Enter the ADMIN_KEY you saved when you set up the owner service."));
+      var k = input("", "password"), b = el("button", "primary", "Connect"); b.style.marginTop = "10px";
+      b.onclick = function () {
+        busy(b, function () {
+          sessionStorage.setItem(ADMIN_KEY_STORE, k.value.trim());
+          return oapi("/admin/owners").then(function () { render(); return "Connected"; }, function (e) { sessionStorage.removeItem(ADMIN_KEY_STORE); throw e; });
+        });
+      };
+      card.appendChild(k); card.appendChild(b); main.appendChild(card); return;
+    }
+
+    var credsBox = el("div"), list = el("div");
+    var create = el("div", "card");
+    create.appendChild(el("h2", null, "Create owner login"));
+    create.appendChild(el("p", "muted", "The owner can only change photos of this one hall: hall photo, film poster and up to 4 gallery photos."));
+    var hall = el("select");
+    HOME.theatres.forEach(function (t) { var o = el("option", null, (t.name || t.theatre_id) + " (" + (t.theatre_id || t.id) + ")"); o.value = t.theatre_id || t.id; hall.appendChild(o); });
+    var user = input(""), pass = input(randomPassword());
+    user.placeholder = "for example: sundarghar (no spaces)";
+    var gen = el("button", null, "New random password"); gen.onclick = function () { pass.value = randomPassword(); };
+    var make = el("button", "primary", "Create login"); make.style.marginLeft = "8px";
+    make.onclick = function () {
+      busy(make, function () {
+        var u = user.value.trim().toLowerCase(), p = pass.value;
+        return oapi("/admin/owners", "POST", { username: u, theatre_id: hall.value, password: p }).then(function () {
+          showCreds(credsBox, u, p); user.value = ""; pass.value = randomPassword(); load();
+          return "Owner created. Copy the login shown above.";
+        });
+      });
+    };
+    create.appendChild(field("Film hall", hall)); create.appendChild(field("Username", user)); create.appendChild(field("Password", pass));
+    var br = el("div"); br.style.marginTop = "12px"; br.appendChild(gen); br.appendChild(make); create.appendChild(br);
+
+    function load() {
+      list.replaceChildren(el("p", "muted", "Loading…"));
+      oapi("/admin/owners").then(function (d) {
+        list.replaceChildren();
+        if (!d.owners.length) list.appendChild(el("p", "muted", "No owner logins yet."));
+        d.owners.forEach(function (o) {
+          var c = el("div", "card");
+          c.appendChild(el("h2", null, o.username + (o.blocked ? "  (BLOCKED)" : "")));
+          c.appendChild(el("p", "muted", hallName(o.theatre_id) + " · " + (o.last_login ? "last login " + new Date(o.last_login).toLocaleString() : "never logged in")));
+          var row = el("div", "row");
+          var blk = el("button", o.blocked ? "primary" : "danger", o.blocked ? "Unblock" : "Block");
+          blk.onclick = function () {
+            busy(blk, function () { return oapi("/admin/owners/" + encodeURIComponent(o.username) + "/block", "POST", { blocked: !o.blocked }).then(function () { load(); return o.blocked ? "Unblocked" : "Blocked. The owner is logged out immediately."; }); });
+          };
+          var rst = el("button", null, "Reset password");
+          rst.onclick = function () {
+            var np = randomPassword();
+            busy(rst, function () { return oapi("/admin/owners/" + encodeURIComponent(o.username) + "/password", "POST", { password: np }).then(function () { showCreds(credsBox, o.username, np); window.scrollTo(0, 0); return "Password changed. Copy the new login shown above."; }); });
+          };
+          var del = el("button", "danger", "Delete");
+          del.onclick = function () {
+            if (!confirm("Delete the login " + o.username + "?")) return;
+            busy(del, function () { return oapi("/admin/owners/" + encodeURIComponent(o.username), "DELETE").then(function () { load(); return "Deleted"; }); });
+          };
+          row.appendChild(blk); row.appendChild(rst); row.appendChild(del); c.appendChild(row); list.appendChild(c);
+        });
+      }).catch(function (e) { list.replaceChildren(el("p", "muted", e.message)); });
+    }
+    main.appendChild(credsBox); main.appendChild(create); main.appendChild(list); load();
   }
 
   if (token()) start().catch(function (e) { showLogin(e.message === "Token rejected" ? "" : e.message); });
