@@ -11,7 +11,7 @@
   var TOKEN_KEY = "fh_gh_token", MAX_GALLERY = 4;
   /* Address of the owner service (Cloudflare Worker). Paste it here after you deploy it,
      for example "https://filmhall-owners.yourname.workers.dev" */
-  var OWNER_API = "";
+  var OWNER_API = "https://filmhall-owners.prabhashbarik123.workers.dev";
   var ADMIN_KEY_STORE = "fh_owner_admin_key";
   var enc = encodeURIComponent;
 
