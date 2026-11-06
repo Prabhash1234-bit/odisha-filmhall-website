@@ -9,9 +9,10 @@
   var REGION = "odisha", DATA = "data/odisha";
   var API = "https://api.github.com/repos/" + OWNER + "/" + REPO;
   var TOKEN_KEY = "fh_gh_token", MAX_GALLERY = 4;
-  /* Address of the owner service (Cloudflare Worker). Paste it here after you deploy it,
-     for example "https://filmhall-owners.yourname.workers.dev" */
-  var OWNER_API = "https://filmhall-owners.prabhashbarik123.workers.dev";
+  /* Address of the owner service (Cloudflare Worker). It is set once in config.js:
+     window.FILMHALL_OWNER_API = "https://filmhall-owners.yourname.workers.dev"; */
+  var OWNER_API = String(window.FILMHALL_OWNER_API || "").replace(/\/+$/, "");
+  var OWNER_TOKEN_KEY = "fh_owner_token";
   var ADMIN_KEY_STORE = "fh_owner_admin_key";
   var enc = encodeURIComponent;
 
@@ -67,7 +68,7 @@
     btn.disabled = true;
     return Promise.resolve().then(work)
       .then(function (msg) { toast(msg || "Published. The website updates in about a minute."); },
-            function (e) { if (e.message !== "Token rejected") toast(e.message, true); })
+            function (e) { if (e.message !== "Token rejected" && e.message !== "Session ended") toast(e.message, true); })
       .then(function () { btn.disabled = false; });
   }
   function part(body, title, hint) {
@@ -182,7 +183,7 @@
   /* ---------- login ---------- */
   function logout(msg) {
     sessionStorage.removeItem(TOKEN_KEY); localStorage.removeItem(TOKEN_KEY);
-    showLogin(msg);
+    showChooser(msg);
   }
   function showLogin(msg) {
     app.replaceChildren();
@@ -208,7 +209,8 @@
     b.onclick = go; t.onkeydown = function (e) { if (e.key === "Enter") go(); };
     card.appendChild(field("GitHub token", t)); card.appendChild(remLab); card.appendChild(b);
     var back = el("a", "muted", "Back to the website"); back.href = "index.html"; back.style.cssText = "display:block;margin-top:12px";
-    card.appendChild(back); box.appendChild(card); app.appendChild(box);
+    var other = el("button", null, "\u2190 Back"); other.style.marginTop = "12px"; other.onclick = function () { showChooser(); };
+    card.appendChild(other); card.appendChild(back); box.appendChild(card); app.appendChild(box);
   }
 
   /* ---------- load + shell ---------- */
@@ -599,6 +601,188 @@
     main.appendChild(credsBox); main.appendChild(create); main.appendChild(list); load();
   }
 
+
+  /* ---------- first screen: HQ admin or theatre owner ---------- */
+  function showChooser(msg) {
+    app.replaceChildren();
+    var box = el("div"); box.id = "login";
+    var card = el("div", "card");
+    card.appendChild(el("h2", null, "FilmHall Odisha admin"));
+    card.appendChild(el("p", "muted", msg || "Who is logging in?"));
+    var hq = el("button", "primary", "HQ Admin"), ow = el("button", null, "Theatre Owner");
+    [hq, ow].forEach(function (b) { b.style.cssText = "display:block;width:100%;padding:16px;font-size:17px;margin-top:12px"; });
+    hq.onclick = function () { showLogin(); };
+    ow.onclick = function () { showOwnerLogin(); };
+    card.appendChild(hq); card.appendChild(ow);
+    var back = el("a", "muted", "Back to the website"); back.href = "index.html"; back.style.cssText = "display:block;margin-top:16px";
+    card.appendChild(back); box.appendChild(card); app.appendChild(box);
+  }
+
+  /* ---------- theatre owner: login ---------- */
+  var OWNER_HALL = null, OWNER_LOCAL = {};
+  function ownerToken() { return sessionStorage.getItem(OWNER_TOKEN_KEY) || localStorage.getItem(OWNER_TOKEN_KEY) || ""; }
+  function ownerLogout(msg) {
+    sessionStorage.removeItem(OWNER_TOKEN_KEY); localStorage.removeItem(OWNER_TOKEN_KEY);
+    OWNER_HALL = null; showChooser(msg);
+  }
+  function owApi(path, method, body, type) {
+    return fetch(OWNER_API + path, {
+      method: method || "GET",
+      headers: Object.assign({ Authorization: "Bearer " + ownerToken() }, body ? { "Content-Type": type || "application/json" } : {}),
+      body: body
+    }).catch(function () { throw new Error("Cannot reach the server. Check your internet and try again."); })
+      .then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (d) {
+          if (r.status === 401 || r.status === 403) { ownerLogout(d.error || "Please log in again."); throw new Error("Session ended"); }
+          if (!r.ok) throw new Error(d.error || "Error " + r.status);
+          return d;
+        });
+      });
+  }
+  function showOwnerLogin(msg) {
+    app.replaceChildren();
+    var box = el("div"); box.id = "login";
+    var card = el("div", "card");
+    card.appendChild(el("h2", null, "Theatre owner login"));
+    if (!OWNER_API) {
+      card.appendChild(el("p", "muted", "Owner login is not set up yet. Ask FilmHall HQ."));
+      var b0 = el("button", null, "\u2190 Back"); b0.onclick = function () { showChooser(); }; card.appendChild(b0);
+      box.appendChild(card); app.appendChild(box); return;
+    }
+    card.appendChild(el("p", "muted", msg || "Choose your theatre and enter the username and password FilmHall gave you."));
+    var hall = el("select"); var first = el("option", null, "Loading theatres…"); first.value = ""; hall.appendChild(first);
+    fetch(DATA + "/home.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (h) {
+      hall.replaceChildren();
+      var ph = el("option", null, "Select your theatre"); ph.value = ""; hall.appendChild(ph);
+      (h.theatres || []).slice().sort(function (a, b) { return String(a.name).localeCompare(String(b.name)); }).forEach(function (t) {
+        var o = el("option", null, t.name || t.theatre_id); o.value = t.theatre_id || t.id; hall.appendChild(o);
+      });
+    }).catch(function () { first.textContent = "Could not load the theatre list"; });
+    var u = input("", "text"); u.autocomplete = "username"; u.autocapitalize = "none";
+    var p = input("", "password"); p.autocomplete = "current-password";
+    var rem = el("input"); rem.type = "checkbox";
+    var remLab = el("label"); remLab.style.cssText = "display:flex;gap:8px;align-items:center;margin:12px 0"; remLab.appendChild(rem); remLab.appendChild(document.createTextNode("Keep me logged in on this device"));
+    var b = el("button", "primary", "Log in");
+    function go() {
+      busy(b, function () {
+        if (!hall.value) throw new Error("Please select your theatre.");
+        return fetch(OWNER_API + "/login", { method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: u.value.trim(), password: p.value }) })
+          .catch(function () { throw new Error("Cannot reach the server. Check your internet and try again."); })
+          .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) {
+            if (!r.ok) throw new Error(d.error || "Could not log in.");
+            if (d.hall.theatre_id !== hall.value) throw new Error("Wrong theatre, username or password.");
+            (rem.checked ? localStorage : sessionStorage).setItem(OWNER_TOKEN_KEY, d.token);
+            OWNER_HALL = d.hall; OWNER_LOCAL = {}; renderOwner(); return "Logged in";
+          }); });
+      });
+    }
+    b.onclick = go; p.onkeydown = function (e) { if (e.key === "Enter") go(); };
+    card.appendChild(field("Theatre name", hall)); card.appendChild(field("Username", u)); card.appendChild(field("Password", p));
+    card.appendChild(remLab); card.appendChild(b);
+    var back = el("button", null, "\u2190 Back"); back.style.marginTop = "12px"; back.onclick = function () { showChooser(); };
+    card.appendChild(back); box.appendChild(card); app.appendChild(box);
+  }
+
+  /* ---------- theatre owner: photos only ---------- */
+  function prepBlob(file, max, quality) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onload = function () {
+        var s = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+        var c = document.createElement("canvas");
+        c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+        var x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
+        x.imageSmoothingQuality = "high"; x.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        (function tryQ(q) {
+          c.toBlob(function (b) {
+            if (!b) return reject(new Error("Could not process that photo."));
+            if (b.size <= 2400000 || q <= 0.55) resolve(b); else tryQ(q - 0.07);
+          }, "image/jpeg", q);
+        })(quality);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error("That file is not a photo I can read.")); };
+      img.src = url;
+    });
+  }
+  function ownerUrls(h) { return [h.photo, h.poster].concat(h.gallery || []).filter(Boolean); }
+  function ownerPreview(url, ratio) {
+    var wrap = el("div"); wrap.style.cssText = "background:var(--bg);border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;width:100%;aspect-ratio:" + ratio;
+    if (!url) { var n = el("span", "muted", "No photo"); wrap.appendChild(n); return wrap; }
+    var im = el("img"); im.alt = ""; im.style.cssText = "width:100%;height:100%;object-fit:contain";
+    im.onerror = function () { wrap.replaceChildren(el("span", "muted", "Updating… (shows in about a minute)")); };
+    im.src = OWNER_LOCAL[url] || url; wrap.appendChild(im); return wrap;
+  }
+  function ownerPick(label, slot, cls) {
+    var b = el("button", cls || "", label), f = fileInput(); f.style.display = "none";
+    f.onchange = function () {
+      var file = f.files[0]; f.value = ""; if (!file) return;
+      busy(b, function () {
+        var max = slot === "poster" ? 1800 : slot === "photo" ? 1600 : 1400;
+        var q = slot === "poster" ? 0.92 : slot === "photo" ? 0.9 : 0.88;
+        return prepBlob(file, max, q).then(function (blob) {
+          var before = ownerUrls(OWNER_HALL);
+          return owApi("/photo/" + slot, "PUT", blob, "image/jpeg").then(function (d) {
+            var added = ownerUrls(d.hall).filter(function (u) { return before.indexOf(u) < 0; })[0];
+            if (added) OWNER_LOCAL[added] = URL.createObjectURL(blob);
+            OWNER_HALL = d.hall; renderOwner();
+            return "Saved. The website updates in about a minute.";
+          });
+        });
+      });
+    };
+    b.onclick = function () { f.click(); };
+    var w = el("span"); w.appendChild(b); w.appendChild(f); return w;
+  }
+  function ownerRemove(slot) {
+    var b = el("button", "danger", "Remove");
+    b.onclick = function () {
+      if (!confirm("Remove this photo?")) return;
+      busy(b, function () {
+        return owApi("/photo/" + slot, "DELETE").then(function (d) { OWNER_HALL = d.hall; renderOwner(); return "Removed"; });
+      });
+    };
+    return b;
+  }
+  function renderOwner() {
+    var h = OWNER_HALL; app.replaceChildren();
+    var head = el("header"), bar = el("div", "bar");
+    var logo = el("img"); logo.src = "logo.png"; logo.alt = "";
+    var out = el("button", null, "Log out"); out.onclick = function () { ownerLogout("You are logged out."); };
+    bar.appendChild(logo); bar.appendChild(el("h1", null, h.name || "Your theatre")); bar.appendChild(out);
+    head.appendChild(bar);
+    var main = el("main");
+    main.appendChild(el("p", "muted", "You can change photos only. Changes appear on the website in about a minute."));
+
+    var c1 = el("div", "card"); c1.appendChild(el("h2", null, "Hall photo")); c1.appendChild(el("p", "muted", "The big photo at the top of your hall page."));
+    c1.appendChild(ownerPreview(h.photo, "16/9")); var r1 = el("div", "row"); r1.style.marginTop = "10px"; r1.appendChild(ownerPick("Change hall photo", "photo", "primary")); c1.appendChild(r1);
+    main.appendChild(c1);
+
+    var c2 = el("div", "card"); c2.appendChild(el("h2", null, "Film poster")); c2.appendChild(el("p", "muted", h.film_title ? "Now showing: " + h.film_title : "The film showing now. Use a tall, clear poster."));
+    var pv = ownerPreview(h.poster, "2/3"); pv.style.maxWidth = "280px"; pv.style.margin = "0 auto"; c2.appendChild(pv);
+    var r2 = el("div", "row"); r2.style.marginTop = "10px"; r2.appendChild(ownerPick(h.poster ? "Change poster" : "Add poster", "poster", "primary"));
+    if (h.poster) r2.appendChild(ownerRemove("poster")); c2.appendChild(r2); main.appendChild(c2);
+
+    var c3 = el("div", "card"); c3.appendChild(el("h2", null, "Gallery")); c3.appendChild(el("p", "muted", "Up to " + MAX_GALLERY + " photos."));
+    var grid = el("div"); grid.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:12px";
+    for (var i = 0; i < MAX_GALLERY; i++) (function (i) {
+      var url = (h.gallery || [])[i], cell = el("div");
+      cell.appendChild(ownerPreview(url, "4/3"));
+      var r = el("div", "row"); r.style.marginTop = "6px";
+      if (url) { r.appendChild(ownerPick("Change", "g" + (i + 1))); r.appendChild(ownerRemove("g" + (i + 1))); }
+      else if (i === (h.gallery || []).length) r.appendChild(ownerPick("Add photo", "g" + (i + 1), "primary"));
+      cell.appendChild(r); grid.appendChild(cell);
+    })(i);
+    c3.appendChild(grid); main.appendChild(c3);
+    app.appendChild(head); app.appendChild(main);
+  }
+  function ownerStart() {
+    owApi("/me").then(function (d) { OWNER_HALL = d.hall; OWNER_LOCAL = {}; renderOwner(); })
+      .catch(function (e) { if (e.message !== "Session ended") showChooser(e.message); });
+  }
+
   if (token()) start().catch(function (e) { showLogin(e.message === "Token rejected" ? "" : e.message); });
-  else showLogin();
+  else if (OWNER_API && ownerToken()) ownerStart();
+  else showChooser();
 })();
