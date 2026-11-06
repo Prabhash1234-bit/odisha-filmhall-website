@@ -111,6 +111,8 @@
     var big = FH.el("img", "brand-odisha");
     big.alt = "FilmHall Odisha";
     FH.assignImage(big, odishaLogoId, "logo.png");
+    /* No logo saved in the content yet: show the FilmHall logo that ships with the site. */
+    if (!odishaLogoId) big.src = "logo.png";
     bar.appendChild(big);
 
     if (filmhallLogoId) {
