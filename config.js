@@ -6,3 +6,4 @@
 window.FILMHALL_CMS_ORIGIN = "https://api.filmhall.in";
 window.FILMHALL_CMS_REGION = "odisha";
 window.FILMHALL_SITE_DATA = "data";
+OWNER_API = "https://filmhall-owners.prabhashbarik123.workers.dev";
