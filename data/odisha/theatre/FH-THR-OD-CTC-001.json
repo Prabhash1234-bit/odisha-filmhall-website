@@ -8,7 +8,7 @@
   "record_status": "published",
   "published_at": "2026-11-05T02:51:46.937Z",
   "created_at": "2026-11-05T02:51:46.937Z",
-  "rev": 6,
+  "rev": 7,
   "prices_json": [],
   "payment_qr_media_id": null,
   "owner_user_id": null,
@@ -27,7 +27,7 @@
     "instagram": "https://www.instagram.com/filmhallofficial?psln=YmVpM25uOW5sN3d6",
     "youtube": "https://youtube.com/watch?v=tdlnMF5Q7wQ&si=WtRazm7mLIJIwaAB"
   },
-  "updated_at": "2026-11-07T00:54:55.680Z",
+  "updated_at": "2026-11-07T00:55:22.750Z",
   "gallery": {
     "items": [
       {
@@ -49,7 +49,7 @@
     ]
   },
   "media": {
-    "adm_FH-THR-OD-CTC-001_photo": "media/theatres/FH-THR-OD-CTC-001/photo.jpg?v=1793895351131",
+    "adm_FH-THR-OD-CTC-001_photo": "media/theatres/FH-THR-OD-CTC-001/photo-1794012922750.jpg",
     "adm_FH-THR-OD-CTC-001_poster": "media/theatres/FH-THR-OD-CTC-001/poster.jpg?v=1793847105452",
     "adm_FH-THR-OD-CTC-001_g1794012895680": "media/theatres/FH-THR-OD-CTC-001/gallery-1794012895680.jpg",
     "adm_FH-THR-OD-CTC-001_g2": "media/theatres/FH-THR-OD-CTC-001/gallery-2.jpg?v=1793847105452",
