@@ -354,7 +354,10 @@
           });
         }
         var jobs = [];
-        if (photo.input.files[0]) jobs.push(addImage(photo.input.files[0], "photo", 1600, 0.9, "photo").then(function (id) { upd.photo_media_id = id; }));
+        if (photo.input.files[0]) {
+          jobs.push(addImage(photo.input.files[0], "photo", 1600, 0.9, "photo").then(function (id) { upd.photo_media_id = id; }));
+          jobs.push(addImage(photo.input.files[0], "thumb", 480, 0.8, "thumb").then(function (id) { upd.photo_thumb_media_id = id; }));
+        }
         if (poster.input.files[0]) jobs.push(addImage(poster.input.files[0], "poster", 1800, 0.93, "poster").then(function (id) { upd.current_film_media_id = id; }));
         slots.forEach(function (s, i) {
           if (s.file) jobs.push(addImage(s.file, "gallery-" + (i + 1), 1400, 0.88, "g" + (i + 1)).then(function (id) { s.newId = id; }));
@@ -628,7 +631,7 @@
   function owApi(path, method, body, type) {
     return fetch(OWNER_API + path, {
       method: method || "GET",
-      headers: Object.assign({ Authorization: "Bearer " + ownerToken() }, body ? { "Content-Type": type || "application/json" } : {}),
+      headers: Object.assign({ Authorization: "Bearer " + ownerToken() }, body && type !== "formdata" ? { "Content-Type": type || "application/json" } : {}),
       body: body
     }).catch(function () { throw new Error("Cannot reach the server. Check your internet and try again."); })
       .then(function (r) {
@@ -722,12 +725,17 @@
         var max = slot === "poster" ? 1800 : slot === "photo" ? 1600 : 1400;
         var q = slot === "poster" ? 0.92 : slot === "photo" ? 0.9 : 0.88;
         return prepBlob(file, max, q).then(function (blob) {
-          var before = ownerUrls(OWNER_HALL);
-          return owApi("/photo/" + slot, "PUT", blob, "image/jpeg").then(function (d) {
-            var added = ownerUrls(d.hall).filter(function (u) { return before.indexOf(u) < 0; })[0];
-            if (added) OWNER_LOCAL[added] = URL.createObjectURL(blob);
-            OWNER_HALL = d.hall; renderOwner();
-            return "Saved. The website updates in about a minute.";
+          var thumbP = slot === "photo" ? prepBlob(file, 480, 0.8) : Promise.resolve(null);
+          return thumbP.then(function (th) {
+            var body = blob, type = "image/jpeg";
+            if (th) { body = new FormData(); body.append("file", blob, "photo.jpg"); body.append("thumb", th, "thumb.jpg"); type = "formdata"; }
+            var before = ownerUrls(OWNER_HALL);
+            return owApi("/photo/" + slot, "PUT", body, type).then(function (d) {
+              var added = ownerUrls(d.hall).filter(function (u) { return before.indexOf(u) < 0; })[0];
+              if (added) OWNER_LOCAL[added] = URL.createObjectURL(blob);
+              OWNER_HALL = d.hall; renderOwner();
+              return "Saved. The website updates in about a minute.";
+            });
           });
         });
       });
