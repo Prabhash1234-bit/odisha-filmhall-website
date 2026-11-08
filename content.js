@@ -203,7 +203,7 @@
 
   function mediaIdOf(obj) {
     if (!obj) return null;
-    return obj.photo_media_id || obj.current_film_media_id || obj.cover_media_id || null;
+    return obj.photo_thumb_media_id || obj.photo_media_id || obj.current_film_media_id || obj.cover_media_id || null;
   }
 
   function metaText(parts) {
