@@ -287,19 +287,25 @@
   /* ---------- Join with us (F / Y / I buttons) ---------- */
 
   function renderJoin(social) {
-    var items = [["facebook", "F", "Facebook"], ["youtube", "Y", "YouTube"], ["instagram", "I", "Instagram"]];
+    /* Standard Facebook / YouTube / Instagram symbols as small vector icons (white on each brand's colour). */
+    var items = [
+      ["facebook", "Facebook", "join-fb", "https://www.facebook.com/share/17n2kYjxau/",
+        '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="#fff" d="M13.6 21v-7.6h2.6l.4-3h-3V8.5c0-.9.3-1.5 1.5-1.5h1.6V4.3c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H8v3h2.6V21h3z"/></svg>'],
+      ["youtube", "YouTube", "join-yt", "https://youtube.com/@filmhallodisha",
+        '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="2" y="5" width="20" height="14" rx="4.2" fill="#fff"/><path fill="#FF0000" d="M10 9l5.4 3-5.4 3z"/></svg>'],
+      ["instagram", "Instagram", "join-ig", "https://www.instagram.com/filmhallodisha",
+        '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.6" y="3.6" width="16.8" height="16.8" rx="5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="3.9" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.1" cy="6.9" r="1.2" fill="#fff"/></svg>']
+    ];
     var row = FH.el("div", "join-row");
-    var any = false;
     items.forEach(function (it) {
-      var url = social[it[0]][0];
-      if (!url) return;
-      any = true;
-      var a = externalLink(it[1], url, "join-btn");
-      a.setAttribute("aria-label", it[2]);
-      a.title = it[2];
+      /* the hall's own page if it has one, otherwise the FilmHall Odisha page */
+      var url = (social[it[0]] && social[it[0]][0]) || it[3];
+      var a = externalLink("", url, "join-btn " + it[2]);
+      a.innerHTML = it[4];
+      a.setAttribute("aria-label", it[1]);
+      a.title = it[1];
       row.appendChild(a);
     });
-    if (!any) return;
     var section = FH.el("section", "join-section");
     section.appendChild(FH.el("h2", "gallery-title", "Join with us"));
     section.appendChild(row);
@@ -385,3 +391,4 @@
     boot();
   }
 })();
+    
