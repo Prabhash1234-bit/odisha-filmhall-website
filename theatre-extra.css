@@ -4,5 +4,10 @@
 .film-poster { display: block; margin: 0 auto; width: min(480px, 94%); height: auto; border-radius: 10px; image-rendering: auto; box-shadow: 0 2px 14px rgba(0,0,0,.25); }
 .poster-title { margin: 10px 0 0; font-weight: 600; }
 .join-row { display: flex; gap: 12px; justify-content: center; }
-.join-btn { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 12px; background: var(--fh-lotus); color: var(--fh-white); font-weight: 700; font-size: 20px; text-decoration: none; }
-.join-btn:hover { background: var(--fh-lotus-deep); }
+.join-btn { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 12px; background: var(--fh-lotus); text-decoration: none; transition: transform .15s ease, filter .15s ease; }
+.join-btn svg { width: 28px; height: 28px; display: block; }
+.join-fb { background: #1877F2; }
+.join-yt { background: #FF0000; }
+.join-ig { background: radial-gradient(circle at 30% 107%, #FED576 0%, #F47133 26%, #BC3081 60%, #4C63D2 100%); }
+.join-btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+.join-btn:focus-visible { outline: 2px solid var(--fh-lotus-deep, #8E1440); outline-offset: 3px; }
